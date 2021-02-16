@@ -4,8 +4,8 @@ source code > msbuild > intermideate language > common lanugage runtime > JIT co
 
 separation of concerns deals with organizing code that are logically similar
 
-namespace is logical grouping of types that follow a theme
-assembiles are the physical grouping
+namespace is grouping of classes/types that follow a theme
+assembiles are the physical grouping of classes and resources. Form a logical unit like an exe or dynamic link library
 
 .net is a open source developer framework that is cross platform. there are multiple libraries and .net languages that allow developers to make these applications
 
@@ -17,4 +17,4 @@ value types are like primitives such as int, and stored in the stack not the hea
 
 references types the memory location of objects on the heap
 
-Common Type System
+Common Type System defines how types are declared, used, and managed in the common language runtime
