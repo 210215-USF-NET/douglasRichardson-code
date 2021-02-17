@@ -27,3 +27,14 @@ Non-generic collections takes memory when needed
 
 Generic Collections have type safe since there is no casting to an object
     list, dictionary, stack, queue
+
+2/17/21
+Business Logic, data layer
+UI BL DL, models
+UI refers to models and BL
+BL processes the input from UI, BL refers to models, BL refers to DL
+DL gets data from the data source and persisting data to the data source
+DL refers to the Models
+
+Report on delegates, events, actions, functions, predicates
+my group on actions with richard hakes, raju ivaturi, madeline williams
