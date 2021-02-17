@@ -2,12 +2,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HeroDemoModels\HeroDemoModels.csproj" />
-    <ProjectReference Include="..\HeroBL\HeroBL.csproj" />
-    <ProjectReference Include="..\HeroDL\HeroDL.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 

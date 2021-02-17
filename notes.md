@@ -18,3 +18,12 @@ value types are like primitives such as int, and stored in the stack not the hea
 references types the memory location of objects on the heap
 
 Common Type System defines how types are declared, used, and managed in the common language runtime
+
+Arrays vs array lists
+Collections:
+
+Non-generic collections takes memory when needed
+    arraylist, hashtable, stack, queue
+
+Generic Collections have type safe since there is no casting to an object
+    list, dictionary, stack, queue

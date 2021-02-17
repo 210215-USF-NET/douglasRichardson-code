@@ -36,6 +36,8 @@ namespace HeroDemo
             newHero.ElementType = Enum.Parse<Element >(Console.ReadLine());
 
             Console.WriteLine($"A new Hero created with: \n\t name: {newHero.HeroName} \n\t superPower: {newHero.SuperPower.Name} \n\t type: {newHero.ElementType}");
+
+            
         }//main method
     }//class
 }
