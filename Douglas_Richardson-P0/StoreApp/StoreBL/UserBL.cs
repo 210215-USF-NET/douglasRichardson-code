@@ -1,0 +1,11 @@
+using StoreModels;
+namespace StoreBL
+{
+    public class UserBL : IUserBL
+    {
+        private bool userLoggedIn = false;
+        public bool LogUserIn { get; set; }
+        public bool IsUserManager { get; set; }
+        public Location UserLocation { get; set; }
+    }
+}

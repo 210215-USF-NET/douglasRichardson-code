@@ -1,7 +1,11 @@
+using StoreModels;
+using System.Collections.Generic;
 namespace StoreModels
 {
     /// <summary>
     /// This class should contain all the fields and properties that define a customer order. 
+    /// Orders are created when a customer is using the shop to put products/items in their cart.
+    /// Order Histories are separate
     /// </summary>
     public class Order
     {
@@ -10,10 +14,12 @@ namespace StoreModels
         private Location location;
         private double total;
         private int orderID;
-        
+        private bool inCart;
         public Customer Customer { get; set; }
         public double Total { get; set; }
         public int OrderID { get; set; }
-        //TODO: collection of items
+        public bool InCart { get; set; }
+        public Location Location { get; set; }
+        public List<Item> orderItems{get;set;}
     }
 }

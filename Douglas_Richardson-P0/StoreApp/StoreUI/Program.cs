@@ -1,5 +1,5 @@
 ﻿using System;
-
+using StoreBL;
 namespace StoreUI
 {
     class Program
@@ -9,13 +9,13 @@ namespace StoreUI
         /// </summary>
         /// <param name="args"></param>
         
-        static public Boolean userLoggedIn = false;
+        
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to INSERT NAME HERE! ");
             Console.WriteLine("How may we help you? ");
             //call method that starts main user interface
-            MenuFactory menuFactory = new MenuFactory();
+            MenuFactory menuFactory = new MenuFactory(new UserBL());
             menuFactory.Start();
         }
     }

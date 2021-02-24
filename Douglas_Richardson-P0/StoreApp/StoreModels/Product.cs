@@ -6,10 +6,10 @@ namespace StoreModels
         private int productID;
         private string productName;
         private double price;
-        private string category;
+        private Category category;
         public int ProductID { get; set; }
         public string ProductName { get; set; }
         public double Price { get; set; }
-        public string Category { get; set; }
+        public Category Category { get; set; }
     }
 }

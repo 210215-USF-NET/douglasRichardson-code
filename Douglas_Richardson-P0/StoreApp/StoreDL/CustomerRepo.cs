@@ -8,11 +8,14 @@ namespace StoreDL
     public class CustomerRepo : ICustomerRepo
     {
         private string jsonString;
-        private string filePath = "./StoreDL/Customers.json";
-        public void newCustomer(Customer customer){
-
+        private string filePath = "../StoreDL/Customers.json";
+        public void AddNewCustomer(Customer customer){
+            List<Customer> customersFromFile = GetCustomers();
+            customersFromFile.Add(customer);
+            jsonString = JsonSerializer.Serialize(customersFromFile);
+            File.WriteAllText(filePath, jsonString);
         }
-        List<Customer> GetCustomers(){
+        public List<Customer> GetCustomers(){
             try{
                 jsonString = File.ReadAllText(filePath);
             }catch(Exception e){
@@ -20,5 +23,6 @@ namespace StoreDL
             }
             return JsonSerializer.Deserialize<List<Customer>>(jsonString);
         }
-    }
+
+    }//class
 }
