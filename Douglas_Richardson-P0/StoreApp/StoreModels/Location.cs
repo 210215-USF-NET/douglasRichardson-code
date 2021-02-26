@@ -7,7 +7,6 @@ namespace StoreModels
     {
         //Maybe change address into a compositve value thing? street name, state, city
         private string address;
-        private int locationID;
         private string locationName;
         public string Address { get; set; }
         public int LocationID {get; set;}

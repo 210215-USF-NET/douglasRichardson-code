@@ -5,7 +5,7 @@ namespace StoreModels
     [DefaultValue(Category.Nothing)]
     public enum Category
     {
-        Nothing, Food, Collars, Leashes, Clothes, Beds, Accessories
+        Nothing = 1, Food = 2, Collars = 3, Leashes = 4, Clothes = 5, Beds = 6, Accessories = 7
 
     }
 }

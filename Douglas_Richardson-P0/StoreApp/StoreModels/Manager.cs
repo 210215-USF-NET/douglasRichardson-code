@@ -9,12 +9,11 @@ namespace StoreModels
         private string firstName;
         private string lastName;
         private string emailAddress;
-        private int managerID = 0;
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string EmailAddress { get; set; }
-        public int ManagerID { get; set; }
+
         //TODO: Order history here
     }
 }

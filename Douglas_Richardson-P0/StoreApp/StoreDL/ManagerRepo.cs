@@ -1,27 +1,30 @@
-﻿using System.IO;
-using System.Text.Json;
+﻿
 using System;
-using StoreModels;
+using Model = StoreModels;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
     public class ManagerRepo : IManagerRepo
     {
-        private string jsonString;
-        private string filePath = "../StoreDL/Managers.json";
-        public void AddNewManager(Manager Manager){
-            List<Manager> ManagersFromFile = GetManagers();
-            ManagersFromFile.Add(Manager);
-            jsonString = JsonSerializer.Serialize(ManagersFromFile);
-            File.WriteAllText(filePath, jsonString);
+        private Entity.P0DatabaseContext context;
+        private Mapper.ManagerMapper mapper; 
+        public ManagerRepo(Entity.P0DatabaseContext context, Mapper.ManagerMapper mapper){
+            this.mapper = mapper;
+            this.context = context;
         }
-        public List<Manager> GetManagers(){
-            try{
-                jsonString = File.ReadAllText(filePath);
-            }catch(Exception e){
-                return new List<Manager>();
-            }
-            return JsonSerializer.Deserialize<List<Manager>>(jsonString);
+        public void AddNewManager(Model.Manager manager)
+        {
+            context.Managers.Add(mapper.ParseManager(manager));
+            context.SaveChanges();
+        }
+
+        public List<Model.Manager> GetManagers()
+        {
+           return context.Managers.Select(x => mapper.ParseManager(x)).ToList();
         }
 
     }//class

@@ -1,28 +1,29 @@
-﻿using System.IO;
-using System.Text.Json;
-using System;
-using StoreModels;
+﻿using System;
+using Model = StoreModels;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
     public class ProductRepo
     {
-        private string jsonString;
-        private string filePath = "../StoreDL/Products.json";
-        public void AddNewProduct(Product Product){
-            List<Product> ProductsFromFile = GetProducts();
-            Console.WriteLine(Product.ProductName);
-            ProductsFromFile.Add(Product);
-            jsonString = JsonSerializer.Serialize(ProductsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        private Entity.P0DatabaseContext context;
+        private Mapper.ProductMapper mapper; 
+        public ProductRepo(Entity.P0DatabaseContext context, Mapper.ProductMapper mapper){
+            this.mapper = mapper;
+            this.context = context;
         }
-        public List<Product> GetProducts(){
-            try{
-                jsonString = File.ReadAllText(filePath);
-            }catch(Exception e){
-                return new List<Product>();
-            }
-            return JsonSerializer.Deserialize<List<Product>>(jsonString);
+        public void AddNewProduct(Model.Product Product)
+        {
+            context.Products.Add(mapper.ParseProduct(Product));
+            context.SaveChanges();
+        }
+
+        public List<Model.Product> GetProducts()
+        {
+           return context.Products.Select(x => mapper.ParseProduct(x)).ToList();
         }
 
     }//class

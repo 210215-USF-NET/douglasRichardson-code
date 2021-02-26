@@ -1,6 +1,8 @@
 using System;
 using StoreBL;
 using StoreDL;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
 using StoreModels;
 namespace StoreUI
 {
@@ -10,9 +12,10 @@ namespace StoreUI
         
         //main userBL
         private IUserBL ourUserBL;
-
-        public MenuFactory(IUserBL newUserBL){
+        private Entity.P0DatabaseContext context;
+        public MenuFactory(IUserBL newUserBL, Entity.P0DatabaseContext context){
             ourUserBL = newUserBL;
+            this.context = context;
         }
 
         public void End(){
@@ -69,35 +72,41 @@ namespace StoreUI
                 case "1":
                     End();
                     CustomerLoginMenu customerLoginMenu = new CustomerLoginMenu(
-                        new CustomerBL(new CustomerRepo()), 
-                        new ManagerBL(new ManagerRepo()), 
-                        ourUserBL);
+                        new CustomerBL(new CustomerRepo(context, new CustomerMapper())), 
+                        new ManagerBL(new ManagerRepo(context, new Mapper.ManagerMapper())), 
+                        ourUserBL,
+                        context);
                     customerLoginMenu.Start();
                     break;
                 //Register
                 case "2":
                     End();
                     CustomerRegisterMenu customerRegisterMenu = new CustomerRegisterMenu(
-                        new CustomerBL(new CustomerRepo()), 
-                        new ManagerBL(new ManagerRepo()), 
-                        ourUserBL);
+                        new CustomerBL(new CustomerRepo(context, new CustomerMapper())), 
+                        new ManagerBL(new ManagerRepo(context, new Mapper.ManagerMapper())), 
+                        ourUserBL,
+                        context);
                     customerRegisterMenu.Start();
                     break;
                 //View Cart
                 case "3":
                     End();
-                    OrderHistoryMenu orderHistoryMenu = new OrderHistoryMenu();
-                    orderHistoryMenu.Start();
+                    CartMenu cartMenu = new CartMenu(null,
+                    new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                    ourUserBL,
+                    context);
+                    cartMenu.Start();
                     break;
                 //View Products
                 case "4": 
                     ProductMenu productMenu = new ProductMenu(
-                        new ProductBL(new ProductRepo()),
-                        new ItemBL(new ItemRepo()),
+                        new ProductBL(new ProductRepo(context, new Mapper.ProductMapper()),context),
+                        new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
-                        new LocationBL(new LocationRepo()),
-                        new CartBL(new CartRepo(), new OrderRepo()));
-                    productMenu.Start();
+                        new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
+                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                        context);
+                    productMenu.Start(null);
                     End();
                     break;
                 //Exit store
@@ -120,17 +129,21 @@ namespace StoreUI
                 case "1":
                     End();
                     ProductMenu productMenu = new ProductMenu(
-                        new ProductBL(new ProductRepo()),
-                        new ItemBL(new ItemRepo()),
+                        new ProductBL(new ProductRepo(context, new Mapper.ProductMapper()),context),
+                        new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
-                        new LocationBL(new LocationRepo()),
-                        new CartBL(new CartRepo(), new OrderRepo()));
+                        new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
+                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                        context);
                     productMenu.Start(customer);
                     break;
                 //View Cart
                 case "2":
                     End();
-                    CartMenu cartMenu = new CartMenu(customer);
+                    CartMenu cartMenu = new CartMenu(customer,
+                    new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                    ourUserBL,
+                    context);
                     cartMenu.Start();
                     break;
                 //View Order History
@@ -160,12 +173,13 @@ namespace StoreUI
                 //View Products
                 case "1":
                     End();
-                    ProductMenu productMenu = new ProductMenu(
-                        new ProductBL(new ProductRepo()),
-                        new ItemBL(new ItemRepo()),
+                    ProductMenuManager productMenu = new ProductMenuManager(
+                        new ProductBL(new ProductRepo(context, new Mapper.ProductMapper()),context),
+                        new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
-                        new LocationBL(new LocationRepo()),
-                        new CartBL(new CartRepo(), new OrderRepo()));
+                        new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
+                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                        context);
                     productMenu.Start(manager);
                     break;
                 //View Order Histories from location

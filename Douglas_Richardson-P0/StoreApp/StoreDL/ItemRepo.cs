@@ -1,50 +1,49 @@
-﻿using System.IO;
-using System.Text.Json;
-using System;
-using StoreModels;
+﻿using System;
+using Model = StoreModels;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-
 namespace StoreDL
 {
-    public class ItemRepo : IItemRepo
+    public class ItemRepo
     {
-        private string jsonString;
-        private string filePath = "../StoreDL/Items.json";
-        public void AddNewItem(Item Item){
-            List<Item> ItemsFromFile = GetItems();
-            ItemsFromFile.Add(Item);
-            jsonString = JsonSerializer.Serialize(ItemsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        private Entity.P0DatabaseContext context;
+        private Mapper.ItemMapper mapper; 
+        public ItemRepo(Entity.P0DatabaseContext context, Mapper.ItemMapper mapper){
+            this.mapper = mapper;
+            this.context = context;
         }
-        public List<Item> GetItems(){
-            try{
-                jsonString = File.ReadAllText(filePath);
-            }catch(Exception e){
-                return new List<Item>();
-            }
-            return JsonSerializer.Deserialize<List<Item>>(jsonString);
+        public void AddNewItem(Model.Item Item)
+        {
+            context.Items.Add(mapper.ParseItem(Item));
+            context.SaveChanges();
         }
 
-        public void ChangeItemLocation(Item item){
-            List<Item> ItemsFromFile = GetItems();
-            foreach (Item listItem in ItemsFromFile){
-                if(item.ItemID == listItem.ItemID){
-                    listItem.ItemLocation = item.ItemLocation;
-                }
-            }
-            jsonString = JsonSerializer.Serialize(ItemsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        public List<Model.Item> GetItems()
+        {
+           return context.Items.Include("Product").AsNoTracking().Include("Location").AsNoTracking().Select(x => mapper.ParseItem(x)).ToList();
         }
 
-        public void ChangeItemQuantity(Item item){
-            List<Item> ItemsFromFile = GetItems();
-            foreach (Item listItem in ItemsFromFile){
-                if(item.ItemID == listItem.ItemID){
-                    listItem.Quantity = item.Quantity;
-                }
-            }
-            jsonString = JsonSerializer.Serialize(ItemsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        public void ChangeItemLocation(Model.Item item){
+            Entity.Item findItem = context.Items.Find(item.ItemID);
+            
+            //Entity.LocationTable findLocation = context.LocationTables.Find(item.ItemLocation.LocationID);
+            findItem.Location = mapper.ParseLocation(item.ItemLocation);
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+        }
+
+        public void ChangeItemQuantity(Model.Item item){
+            Entity.Item findItem = context.Items.Find(item.ItemID);
+            //context.Entry(findItem).CurrentValues.SetValues(mapper.ParseItem(item));
+            findItem.Quantity = item.Quantity;
+            //Entity.Product findProduct = context.Products.Find(item.Product.Id);
+            //findItem.Quantity = item.Quantity;
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
+            
         }
     }//class
 }

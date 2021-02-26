@@ -1,56 +1,57 @@
-using System.IO;
-using System.Text.Json;
-using System;
-using StoreModels;
-using System.Collections.Generic;
 
+using System;
+using Model = StoreModels;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 namespace StoreDL
 {
     public class CartRepo
     {
-        private string jsonString;
-        private string filePath = "../StoreDL/Cart.json";
-        // public void CreateNewCart(){
-        //     List<Item> ItemsFromFile = GetCartItems();
-        //     ItemsFromFile.Add(order);
-        //     jsonString = JsonSerializer.Serialize(ItemsFromFile);
-        //     File.WriteAllText(filePath, jsonString);
-        // }
-        public List<Item> GetCartItems(){
-            try{
-                jsonString = File.ReadAllText(filePath);
-            }catch(Exception e){
-                return new List<Item>();
-            }
-            return JsonSerializer.Deserialize<List<Item>>(jsonString);
+        private Entity.P0DatabaseContext context;
+        private Mapper.CartMapper mapper; 
+        public CartRepo(Entity.P0DatabaseContext context, Mapper.CartMapper mapper){
+            this.mapper = mapper;
+            this.context = context;
         }
-        public void AddNewItemToOrder(Item item){
-            List<Item> ItemsFromFile = GetCartItems();
-            ItemsFromFile.Add(item);
-            jsonString = JsonSerializer.Serialize(ItemsFromFile);
-            File.WriteAllText(filePath, jsonString);
-        }
-        public void RemoveItemFromOrder(Item item){
-            List<Item> ItemsFromFile = GetCartItems();
-            foreach (Item listItem in ItemsFromFile){
-                if(item.ItemID == listItem.ItemID){
-                    //TODO: REMOVE item from list
-                    //ItemsFromFile
-                }
-            }
-            jsonString = JsonSerializer.Serialize(ItemsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        public int? AddNewCart(Model.Order order)
+        {
+            Entity.Cart newCart = mapper.ParseOrder(order);
+            context.Carts.Add(newCart);
+            context.SaveChanges();
+            return newCart.Id;
         }
 
-        public void SetPrice(){
-
+        public void UpdateCart(int? cartID, Model.Order order){
+            Entity.Cart thisOrder = context.Carts.Find(cartID);
+            thisOrder.Location = mapper.ParseLocation(order.Location);
+            thisOrder.Customer = mapper.ParseCustomer(order.Customer);
+            thisOrder.Item = mapper.ParseItem(order.orderItems);
+            thisOrder.Quantity = order.Quantity;
+            thisOrder.Total = order.Total;
+            context.SaveChanges();
+            context.ChangeTracker.Clear();
         }
 
-        public double GetPrice(){
-
-        }
-        public void EmptyCart(){
+        public Model.Order GetCartOrder(int? cartID)
+        {
+            Entity.Cart thisOrder = context.Carts.Find(cartID);
+            return mapper.ParseOrder(thisOrder);
             
         }
-    }
+        // public void SetPrice(){
+
+        // }
+
+        // public double GetPrice(){
+        //     Model.Order cartOrder = GetCartOrder();
+        //     return cartOrder.Total;
+        // }
+        public void EmptyCart(Model.Order order){
+            context.Carts.Remove(mapper.ParseOrder(order));
+            context.SaveChanges();
+        }
+    }//class
 }

@@ -12,9 +12,6 @@ namespace StoreBL
         }
         public void AddNewManager(Manager Manager){
             //TODO: check if email exists
-            List<Manager> newList = GetManagers();
-            int newManagerID = newList.Count + 1;
-            Manager.ManagerID = newManagerID;
             iManagerRepo.AddNewManager(Manager);
         }
         public List<Manager> GetManagers(){

@@ -10,7 +10,6 @@ namespace StoreBL
             locationRepo = newLocationRepo;
         }
         public void AddNewLocation(Location Location){
-            Location.LocationID = locationRepo.GetLocations().Count+1;
             locationRepo.AddNewLocation(Location);
         }
         public List<Location> GetLocations(){

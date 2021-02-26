@@ -13,13 +13,15 @@ namespace StoreModels
         private Customer customer;
         private Location location;
         private double total;
-        private int orderID;
+
         private bool inCart;
         public Customer Customer { get; set; }
         public double Total { get; set; }
-        public int OrderID { get; set; }
         public bool InCart { get; set; }
         public Location Location { get; set; }
-        public List<Item> orderItems{get;set;}
+        public int? Id{get;set;}
+        public int Quantity { get; set; }
+        public Item orderItems{get;set;}
+        //public List<Item> orderItems{get;set;}
     }
 }

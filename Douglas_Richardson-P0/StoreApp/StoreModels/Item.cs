@@ -10,7 +10,7 @@ namespace StoreModels
         private Product product;
         private int quantity;
         private Location location;
-        public int ItemID { get; set; }
+        public int? ItemID { get; set; }
         public Product Product { get; set; }
         public int Quantity { get; set; }
         public Location ItemLocation {get;set;}

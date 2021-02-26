@@ -6,6 +6,7 @@ namespace StoreBL
         private bool userLoggedIn = false;
         public bool LogUserIn { get; set; }
         public bool IsUserManager { get; set; }
+        public int? CartID{get;set;}
         public Location UserLocation { get; set; }
     }
 }

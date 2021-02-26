@@ -13,8 +13,6 @@ namespace StoreBL
 
         public void AddNewCustomer(Customer customer){
             List<Customer> newList = GetCustomers();
-            int newCustomerID = newList.Count + 1;
-            customer.CustomerID = newCustomerID;
             //TODO:New Order History, will be empty
             iCustomerRepo.AddNewCustomer(customer);
         }

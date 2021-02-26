@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using StoreModels;
 using StoreBL;
+using Entity = StoreDL.Entities;
 namespace StoreUI
 {
     public class ProductMenu : IMenu
@@ -13,287 +14,203 @@ namespace StoreUI
         private IUserBL ourUserBL;
         private LocationBL locationBL;
         private CartBL cartBL;
-        public ProductMenu(ProductBL newProductBL, ItemBL newItemBL, IUserBL userBL, LocationBL newLocationBL, CartBL newCartBL){
+        private Entity.P0DatabaseContext context;
+        private Customer customer;
+        public ProductMenu(ProductBL newProductBL, ItemBL newItemBL, IUserBL userBL, LocationBL newLocationBL, CartBL newCartBL, Entity.P0DatabaseContext context){
             productBL = newProductBL;
             itemBL = newItemBL;
             ourUserBL = userBL;
             locationBL = newLocationBL;
             cartBL = newCartBL;
+            this.context = context;
         }
 
-        public void End()
-        {
-            active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL);
-            menuFactory.Start();   
-        }
-        public void End(Manager manager)
-        {
-            active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL);
-            menuFactory.Start(manager);   
-        }
+        public void End(){}
         public void End(Customer customer)
         {
             active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL);
-            menuFactory.Start(customer);   
+            MenuFactory menuFactory = new MenuFactory(ourUserBL,context);
+            if(customer != null){
+                menuFactory.Start(customer);  
+            }else{
+                menuFactory.Start();  
+            }  
         }
         public void Start(){}
 
         //Customer product menu start
         public void Start(Customer customer)
         {
+            this.customer = customer;
             active = true;
             do{
-                //TODO: Let customer choose a product, then view the product, then add to cart.
-                //Get the store locations first, let hte customer choose
-                List<Location> thisLocationList = locationBL.GetLocations();
-                if(thisLocationList.Count != 0){
-                    foreach (Location location in thisLocationList){
-                        Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
-                    }
-                }else{
-                    Console.WriteLine("There are no store locations.");
+                Location location = cartBL.GetLocation(ourUserBL.CartID);
+                if(location == null){
+                    CustomerView(this.customer);
                     active = false;
+                }else{
+                    Console.WriteLine("Your current store location is: "+location.LocationName);
+                    Console.WriteLine("Do you want to change your store location?");
+                    Console.WriteLine("Type yes, no or !stop ");
+                    try{
+                        string userInput = Console.ReadLine();
+                        if(userInput.Equals("yes") || userInput.Equals("y")){
+                            CustomerView(this.customer);
+                            active = false;
+                        }else if(userInput.Equals("no") || userInput.Equals("n")){
+                            ListItemsMenuCustomer(this.customer,location);
+                            active=false;
+                        }else if(userInput.Equals("!stop")){
+                            End(this.customer);
+                            active=false;
+                        }else{
+                            Console.WriteLine("Please choose yes or no");
+                        }
+                    }catch(Exception){}
                 }
+                
+                
+            }while(active);
+        }//start customer
+
+        //Choose the location
+        private void CustomerView(Customer customer){
+            //Get the store locations first, let the customer choose
+            List<Location> thisLocationList = locationBL.GetLocations();
+            Console.WriteLine("Type in a number from the list to choose an store.");
+            if(thisLocationList.Count != 0){
+                foreach (Location location in thisLocationList){
+                    Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+                }
+            }else{
+                Console.WriteLine("There are no store locations.");
+                Start(customer);
+                active = false;
+            }
+            while(active){ 
                 try{
                     string userInput = Console.ReadLine();
                     if(userInput.Equals("!stop")){ 
-                        Start(customer); 
+                        End(customer); 
                         break;   
-                    }
-                    //change string input to an int, then find it in the list
-                    int choice = Int32.Parse(userInput);
-                    foreach (Location location in thisLocationList){
-                        if(choice == location.LocationID){
-                            cartBL.AddCustomer(customer);
-                            cartBL.AddLocation(location);
-                            ListItemsMenuCustomer(customer,location);
-                        }else{
+                    }else{
+                        //change string input to an int, then find it in the list
+                        int choice = Int32.Parse(userInput);
+                        bool nothingFound = true;
+                        foreach (Location location in thisLocationList){
+                            if(choice == location.LocationID){
+                                cartBL.AddCustomer(customer);
+                                cartBL.AddLocation(location);
+                                nothingFound = false;
+                                ListItemsMenuCustomer(customer,location);
+                                active = false;
+                                break;
+                            }
+                        }
+                        if(nothingFound){
                             throw new InvalidItemIdException("Not a valid location id.");
                         }
                     }
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
-                }catch(InvalidItemIdException){}
-                catch(Exception){}
-                
-            }while(active);
-        }//start
-        public void Start(Manager manager)
-        {
-            active = true;
-            do{
-                Console.WriteLine("Product Manager Menu");
-                Console.WriteLine("[1] Add New Product");
-                Console.WriteLine("[2] Add New Location");
-                Console.WriteLine("[3] Change Item Quantity");
-                Console.WriteLine("[4] Change Item Location");
-                Console.WriteLine("[5] Back to Previous Menu");
-                ManagerView(manager);
-            }while(active);
-        }//start
-
-        private void ManagerView(Manager manager){
-            string userInput = Console.ReadLine();
-            switch(userInput){
-                //New product
-                case "1":
-                    NewProductMenu(manager);
-                    Start(manager);
-                    break;
-                //Add New Location
-                case "2":
-                    AddNewLocation(manager);
-                    break;
-                //Change Item Quantity  
-                case "3":
-                    ListItemsMenuManager(manager,true,false);
-                    Start(manager);
-                    break;
-                //Change Item Location
-                case "4":
-                    ListItemsMenuManager(manager,false,true);
-                    Start(manager);
-                    break;
-                case "5":
-                    End(manager);
-                    break;
-                default:
-                    break;
+                }catch(InvalidItemIdException){
+                    Console.WriteLine("Not a valid location id.");
+                }catch(Exception e){
+                    Console.WriteLine(e.ToString());
+                }
             }
-        }
-
-        private void CustomerView(Customer customer, Location location){
-
         }
 
         //Opens the store, gets the items and displays them
         private void ListItemsMenuCustomer(Customer customer, Location location){
+            Console.WriteLine();
             Console.WriteLine(location.LocationName+"'s Menu");
-            Console.WriteLine("Type !stop to exit out of this menu.");
-            List<Item> thisItemList = itemBL.GetItems();
-            if(thisItemList.Count != 0){
-                foreach (Item item in thisItemList){
-                    if(item.ItemLocation == location){
-                        Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" Price: "+item.Product.Price+" Quantity: "+item.Quantity);
-                    }
-                }
-            }else{
-                Console.WriteLine("There are no items.");
-                Start(customer);
-                active = false;
-            }
+            bool choosingItem = true;
+            int choice = 0;
             while(active){
                 try{
                     //give the user input, check if they want to stop
-                    string userInput = Console.ReadLine();
-                    if(userInput.Equals("!stop")){ 
-                        Start(customer); 
-                        break;   
-                    }
-                    //change string input to an int, then find it in the list
-                    int choice = Int32.Parse(userInput);
-                    foreach (Item item in thisItemList){
-                        if(choice == item.ItemID){
-                            //TODO: How many items, add item to cart
-                            Console.WriteLine("There is "+item.Quantity);
-                            Console.WriteLine("How many of "+item.Product.ProductName+" do you want?");
-                            AddQuantityToCartMenu(item);
+                    string userInput = "";
+                    if(choosingItem){
+                        List<Item> thisItemList = itemBL.GetItems();
+                        bool noItemsInStore = true;
+                        
+                        foreach (Item item in thisItemList){
+                            if(item.ItemLocation != null){
+                                if(item.ItemLocation.LocationID == location.LocationID){
+                                    Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" Price: "+item.Product.Price+" Quantity: "+item.Quantity);
+                                    noItemsInStore = false;
+                                }
+                            }
+                        }
+                        
+                        if(noItemsInStore){
+                            Console.WriteLine("There are no items.");
+                            Start(customer);
+                            active = false;
                         }else{
-                            throw new InvalidItemIdException("Not a valid item id.");
+                            Console.WriteLine("Type in a number from the list to choose an item.");
+                            Console.WriteLine("Type !stop to exit out of this menu.");
+                        }
+                        userInput = Console.ReadLine();
+                    }                    
+                    if(userInput.Equals("!stop")){ 
+                        End(customer);
+                        active = false;
+                    }else{
+                        //change string input to an int, then find it in the list
+                        if(choosingItem && active){
+                            choice = Int32.Parse(userInput);
+                        }
+                        if(active){
+                            bool nothingFound = true;
+                            List<Item> thisItemList = itemBL.GetItems();
+                            foreach (Item item in thisItemList){
+                                if(item.ItemLocation != null){
+                                    if(choice == item.ItemID && item.ItemLocation.LocationID == location.LocationID){
+                                        choosingItem = false;
+                                        int AmountInCart = 0;//cartBL.GetAmountOfItem(item);
+                                        if((item.Quantity-AmountInCart)==0){
+                                            Console.WriteLine("You have all of these items in your cart. ");
+                                            choosingItem = true;
+                                            nothingFound = false;
+                                        }else{
+                                            Console.WriteLine("There is "+(item.Quantity));
+                                            Console.WriteLine("How many of "+item.Product.ProductName+" do you want?");
+                                            Console.WriteLine("Please type in a number from 1 to "+(item.Quantity-AmountInCart));
+                                            //Let the user they already have some in the cart
+                                            if(AmountInCart>0){
+                                                Console.WriteLine("You have "+AmountInCart+" in your cart already.");
+                                            }
+                                            userInput = Console.ReadLine();
+                                            choice = Int32.Parse(userInput);
+                                            if(choice>=1 && choice<=(item.Quantity-AmountInCart)){
+                                                cartBL.AddNewItemToOrder(item,choice,customer,ourUserBL,location);
+                                                choosingItem = true;
+                                            }else{
+
+                                            }
+                                            nothingFound = false;
+                                        }
+                                    }
+                                }
+                            }
+                            if(nothingFound){
+                                throw new InvalidItemIdException("Not a valid item id.");
+                            }
                         }
                     }
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
-                }catch(InvalidItemIdException){}
-                catch(Exception){}
+                }catch(InvalidItemIdException){
+                    Console.WriteLine("Not a valid item id.");
+                }catch(Exception e){
+                    Console.WriteLine(e.ToString());
+                    break;
+                }
             }
         }//ListItemsMenu
-
-        private void AddQuantityToCartMenu(Item item){
-            try{
-                string userInput = Console.ReadLine();
-                int choice = Int32.Parse(userInput);
-                item.Quantity = choice;
-                cartBL.AddNewItemToOrder(item);
-            }catch(FormatException){
-                Console.WriteLine("Please type in a number from 1 to "+item.Quantity);
-            }catch(Exception){}
-        }
-
-        private void NewProductMenu(Manager manager){
-            Product newProduct = new Product();
-            Console.WriteLine("New Product Menu. ");
-            Console.WriteLine("Type !stop to exit out of this menu.");
-            do{
-                if(newProduct.ProductName == null){
-                    Console.WriteLine("Please type in a product name.");
-                }else if(newProduct.Price == 0.0d){
-                    Console.WriteLine("Please type in a price. ");
-                }else if(newProduct.Category == Category.Nothing){
-                    Console.WriteLine("Please pick in a valid category. ");
-                    Console.WriteLine("[1] Food");
-                    Console.WriteLine("[2] Collars");
-                    Console.WriteLine("[3] Leashes");
-                    Console.WriteLine("[4] Clothes");
-                    Console.WriteLine("[5] Beds");
-                    Console.WriteLine("[6] Accessories");
-                }
-                try{
-                    //give the user input, check if they want to stop
-                    string userInput = Console.ReadLine();
-                    if(userInput.Equals("!stop")){ 
-                        End(manager);     
-                    }
-                    if(newProduct.ProductName == null){
-                        newProduct.ProductName = userInput;
-                    }else if(newProduct.Price == 0.0d){
-                        double result;
-                        Double.TryParse(userInput, out result);
-                        newProduct.Price = result;
-                    }else if(newProduct.Category == Category.Nothing){
-                         switch(userInput){
-                             case "1":
-                                newProduct.Category = Category.Food;
-                                active = false;
-                                break;
-                             case "2":
-                                newProduct.Category = Category.Collars;
-                                active = false;
-                                break;
-                             case "3":
-                                newProduct.Category = Category.Leashes;
-                                active = false;
-                                break;
-                             case "4":
-                                newProduct.Category = Category.Clothes;
-                                active = false;
-                                break;
-                             case "5":
-                                newProduct.Category = Category.Beds;
-                                active = false;
-                                break;
-                             case "6":
-                                newProduct.Category = Category.Accessories;
-                                active = false;
-                                break;
-                         }
-                         productBL.AddProduct(newProduct);
-                    }
-                }catch(Exception){
-                    
-                }
-            }while(active);
-        }//End of NewProductMenu
-
-        //This method lists all of the items for the manager, and allows them to choose an item to change the item's location or quantity
-        private void ListItemsMenuManager(Manager manager, bool isChangingItemQuantity, bool isChangingItemLocation){
-            if(isChangingItemQuantity){
-                Console.WriteLine("Change Item Quantity Menu");
-            }else{
-                Console.WriteLine("Change Item Location Menu");
-            }
-            Console.WriteLine("Type !stop to exit out of this menu.");
-            //Print all the items, this lets the user know which ones to choose
-            List<Item> thisItemList = itemBL.GetItems();
-            if(thisItemList.Count != 0){
-                foreach (Item item in thisItemList){
-                    Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" amount: "+item.Quantity);
-                }
-            }else{
-                Console.WriteLine("There are no items.");
-                active = false;
-            }
-            while(active){
-                try{
-                    //give the user input, check if they want to stop
-                    string userInput = Console.ReadLine();
-                    if(userInput.Equals("!stop")){ 
-                        Start(manager); 
-                        break;   
-                    }
-                    //change string input to an int, then find it in the list
-                    int choice = Int32.Parse(userInput);
-                    foreach (Item item in thisItemList){
-                        if(choice == item.ItemID){
-                            if(isChangingItemQuantity){
-                                GiveItemQuantityMenu(item);   
-                            }else{
-                                GiveItemLocationMenu(item);           
-                            }    
-                        }else{
-                            throw new InvalidItemIdException("Not a valid item id.");
-                        }
-                    }
-                }catch(FormatException){
-                    Console.WriteLine("Please type in a number. ");
-                }catch(InvalidItemIdException){}
-                catch(Exception){}
-            }
-        }//ListItemsMenuManager
-
+        
         private void GiveItemQuantityMenu(Item item){
             Console.WriteLine("Please enter the quantity for "+item.Product.ProductName);
             do{
@@ -305,13 +222,21 @@ namespace StoreUI
                     active = false;
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
-                }catch(Exception){}
+                }catch(Exception e){
+                    Console.WriteLine(e.ToString());
+                }
             }while(active);
         }
 
         private void GiveItemLocationMenu(Item item){
             Console.WriteLine("Choose a new location for an item");
-            List<Location> thisLocationList = locationBL.GetLocations();
+            List<Location> thisLocationList = new List<Location>();
+            try{
+                thisLocationList = locationBL.GetLocations();
+            }catch(Exception e){
+                Console.WriteLine(e.ToString());
+            }
+            
             if(thisLocationList.Count != 0){
                 foreach (Location location in thisLocationList)
                 {
@@ -325,44 +250,27 @@ namespace StoreUI
                 try{
                     string userInput = Console.ReadLine();
                     int choice = Int32.Parse(userInput);
-                    foreach (Location location in thisLocationList){
+                    thisLocationList = locationBL.GetLocations();
+                    bool nothingFound = true;
+                    foreach (Location location in thisLocationList){             
                         if(choice == location.LocationID){
                             item.ItemLocation = location;
-                        }else{
-                            throw new InvalidItemIdException("Not a valid location id.");
+                            itemBL.ChangeItemLocation(item);
+                            nothingFound = false;
+                            active = false;
                         }
+                    }   
+                    if(nothingFound){
+                        throw new InvalidItemIdException("Not a valid location id.");
                     }
-                    active = false;
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
-                }catch(InvalidItemIdException){}
-                catch(Exception){}
+                }catch(InvalidItemIdException){
+                    Console.WriteLine("Not a valid location id. ");
+                }
+                catch(Exception e){Console.WriteLine(e.ToString());}
             }while(active);
         }
 
-        private void AddNewLocation(Manager manager){
-            Console.WriteLine("Please enter a new location");
-            Location location = new Location();
-            do{
-                if(location.LocationName == null){
-                    Console.WriteLine("Type in the name for the location.");
-                }else if(location.Address == null){
-                    Console.WriteLine("Type in the address for the location. ");
-                }
-                try{
-                    string userInput = Console.ReadLine();
-                    if(location.LocationName == null){
-                        location.LocationName = userInput;
-                    }else if(location.Address == null){
-                        location.Address = userInput;
-                    }
-                    locationBL.AddNewLocation(location);
-                    active = false;
-                    Start(manager);
-                }catch(FormatException){
-                    Console.WriteLine("Please type in a number. ");
-                }catch(Exception){}
-            }while(active);
-        }
     }//class
 }

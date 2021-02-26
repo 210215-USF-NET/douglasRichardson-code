@@ -1,27 +1,35 @@
-﻿using System.IO;
-using System.Text.Json;
+﻿
 using System;
-using StoreModels;
+using Model = StoreModels;
+using Entity = StoreDL.Entities;
+using Mapper = StoreDL.Mappers;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
     public class LocationRepo
     {
-        private string jsonString;
-        private string filePath = "../StoreDL/Locations.json";
-        public void AddNewLocation(Location Location){
-            List<Location> LocationsFromFile = GetLocations();
-            LocationsFromFile.Add(Location);
-            jsonString = JsonSerializer.Serialize(LocationsFromFile);
-            File.WriteAllText(filePath, jsonString);
+        private Entity.P0DatabaseContext context;
+        private Mapper.LocationMapper mapper; 
+        public LocationRepo(Entity.P0DatabaseContext context, Mapper.LocationMapper mapper){
+            this.mapper = mapper;
+            this.context = context;
         }
-        public List<Location> GetLocations(){
-            try{
-                jsonString = File.ReadAllText(filePath);
-            }catch(Exception e){
-                return new List<Location>();
+        public void AddNewLocation(Model.Location location)
+        {
+            context.LocationTables.Add(mapper.ParseLocation(location));
+            context.SaveChanges();
+        }
+
+        public List<Model.Location> GetLocations()
+        {
+            if(context.LocationTables.Any(x => x != null)){
+                return context.LocationTables.Select(x => mapper.ParseLocation(x)).ToList();
+            }else{
+                return null;
             }
-            return JsonSerializer.Deserialize<List<Location>>(jsonString);
+            
         }
 
     }//class

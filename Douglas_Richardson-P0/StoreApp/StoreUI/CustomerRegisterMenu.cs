@@ -1,6 +1,7 @@
 using System;
 using StoreModels;
 using StoreBL;
+using Entity = StoreDL.Entities;
 namespace StoreUI
 {
     public class CustomerRegisterMenu : IMenu
@@ -11,15 +12,17 @@ namespace StoreUI
         private ICustomerBL customerBL;
         private IManagerBL managerBL;
         private IUserBL userBL;
-        public CustomerRegisterMenu(ICustomerBL newCustomerBL, IManagerBL newManagerBL, IUserBL newUserBL){
+        private Entity.P0DatabaseContext context;
+        public CustomerRegisterMenu(ICustomerBL newCustomerBL, IManagerBL newManagerBL, IUserBL newUserBL, Entity.P0DatabaseContext context){
             customerBL = newCustomerBL;
             managerBL = newManagerBL;
             userBL = newUserBL;
+            this.context = context;
         }
 
         public void End(){
             active = false;
-            MenuFactory menuFactory = new MenuFactory(userBL);
+            MenuFactory menuFactory = new MenuFactory(userBL,context);
             menuFactory.Start();   
         }
         public void End(Manager manager){
@@ -27,7 +30,7 @@ namespace StoreUI
             managerBL.AddNewManager(manager);
             userBL.LogUserIn = true;
             userBL.IsUserManager = true;
-            MenuFactory menuFactory = new MenuFactory(userBL);
+            MenuFactory menuFactory = new MenuFactory(userBL,context);
             menuFactory.Start(manager);   
         }
         public void End(Customer customer){
@@ -35,7 +38,7 @@ namespace StoreUI
             customerBL.AddNewCustomer(customer);
             userBL.LogUserIn = true;
             userBL.IsUserManager = false;
-            MenuFactory menuFactory = new MenuFactory(userBL);
+            MenuFactory menuFactory = new MenuFactory(userBL,context);
             menuFactory.Start(customer);   
         }
         public void Start(){
@@ -93,7 +96,7 @@ namespace StoreUI
                     }//End of if !stop
                 }catch(Exception e){
                     //TODO: Log exception?, use NLOG? serilog?
-                    Console.WriteLine("Invalid input. ");
+                    Console.WriteLine("Error: "+e.ToString());
                 }
            }while(active);
         }//End of start
