@@ -3,6 +3,9 @@ using StoreDL;
 using System.Collections.Generic;
 namespace StoreBL
 {
+    /// <summary>
+    /// Lets the user add new managers and login
+    /// </summary>
     public class ManagerBL : IManagerBL
     {
 
@@ -11,7 +14,6 @@ namespace StoreBL
             iManagerRepo = newIManagerRepo;
         }
         public void AddNewManager(Manager Manager){
-            //TODO: check if email exists
             iManagerRepo.AddNewManager(Manager);
         }
         public List<Manager> GetManagers(){
@@ -19,14 +21,7 @@ namespace StoreBL
         }
 
         public Manager FindManagerOnEmail(string emailAddress){
-            List<Manager> theseManagers = GetManagers();
-            foreach (Manager m in theseManagers)
-            {
-                if(m.EmailAddress.Equals(emailAddress)){
-                    return m;
-                }
-            }
-            return null; 
+            return iManagerRepo.GetManagerByEmail(emailAddress);
         }
     }
 }

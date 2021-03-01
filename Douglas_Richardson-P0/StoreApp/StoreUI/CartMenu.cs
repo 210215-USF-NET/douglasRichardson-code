@@ -4,6 +4,9 @@ using StoreBL;
 using Entity = StoreDL.Entities;
 namespace StoreUI
 {
+    /// <summary>
+    /// Contains the UI for the cart
+    /// </summary>
     public class CartMenu : IMenu
     {
         Customer customer;
@@ -19,38 +22,47 @@ namespace StoreUI
             ourUserBL = userBL;
             this.context = context;
         }
-        public void End()
+        public void End(Customer customer)
         {
             active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL,context);
-            menuFactory.Start(); 
-            
+            MenuFactory menuFactory = new MenuFactory(ourUserBL,context,cartBL);
+            menuFactory.Start(customer); 
         }
+
+        public void End(){}
 
         public void Start()
         {   
             Order thisCartOrder = new Order();
             
             try{
-                thisCartOrder = cartBL.GetOrder(ourUserBL.CartID);
+                if(customer != null){
+                    if(ourUserBL.CartID == null){
+                        ourUserBL.CartID = cartBL.GetCustomerCart(customer);
+                    }
+                    Console.WriteLine("ourUserBL.cartid with customer: "+ourUserBL.CartID);
+                    thisCartOrder = cartBL.GetOrder(ourUserBL.CartID);
+                }else{
+                    Console.WriteLine("ourUserBL.cartid: "+ourUserBL.CartID);
+                    thisCartOrder = cartBL.GetCartOrderWithNoCustomer(ourUserBL.CartID);
+                }
+                
             }catch(Exception e){
                 Console.WriteLine(e.ToString());
             }
-            
-            if(thisCartOrder == null){
-                cartBL.AddNewItemToOrder(null,0,customer,ourUserBL,null);
-                thisCartOrder = new Order();
-                thisCartOrder.Location = null;
-            }
+
             if(thisCartOrder.Location != null){
                 Console.WriteLine("Your store location is: "+thisCartOrder.Location.LocationName);
             }else{
                 Console.WriteLine("You do not have a store selected.");
             }
             
-            Console.WriteLine("This is what is in your cart");
+            
 
+            // Console.WriteLine(thisCartOrder.Customer.FirstName);
+            // Console.WriteLine(thisCartOrder.orderItems.Quantity);
             if(thisCartOrder.Quantity > 0){
+                Console.WriteLine("This is what is in your cart");
                 Console.WriteLine("You have "+thisCartOrder.Quantity+" of "+thisCartOrder.orderItems.Product.ProductName);
             }else{
                 Console.WriteLine("Your cart is empty. ");
@@ -59,7 +71,7 @@ namespace StoreUI
             // {
             //     Console.WriteLine("You have "+item.Quantity+" of "+item.Product.ProductName);
             // }
-            Console.WriteLine("Here is your total. "+cartBL.GetPrice(ourUserBL.CartID));
+            Console.WriteLine("Here is your total. $"+thisCartOrder.Total);
             while(active){
                 Console.WriteLine("[1] Submit your order");
                 Console.WriteLine("[2] Clear your cart");
@@ -71,22 +83,26 @@ namespace StoreUI
                             if(this.customer != null){
                                 if(thisCartOrder.Quantity > 0){
                                     Console.WriteLine("Order is submitted.");
-                                    cartBL.pushOrder(ourUserBL.CartID);
+                                    cartBL.pushOrder();
                                 }else{
                                     Console.WriteLine("Your cart is empty, cannot submit order. ");
                                 }     
                             }else{
                                 Console.WriteLine("Please login or register to submit your order. ");
                             }
-                            End();
+                            End(customer);
                             break;
                         case "2":
                             Console.WriteLine("Cart has been emptied");
-                            cartBL.EmptyCart(ourUserBL.CartID);
-                            End();
+                            ourUserBL.CartID = cartBL.EmptyCart(ourUserBL.CartID);
+                            Console.WriteLine("Cart :"+ourUserBL.CartID);
+                            End(customer);
                             break;
                         case "3":
-                            End();
+                            End(customer);
+                            break;
+                        default:
+                            Console.WriteLine("Please pick and choose a number;");
                             break;
                     }
                 }catch(Exception){

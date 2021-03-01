@@ -2,6 +2,7 @@
 using StoreBL;
 using StoreDL;
 using StoreDL.Entities;
+using StoreDL.Mappers;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,8 @@ namespace StoreUI
     class Program
     {
         /// <summary>
-        /// This is the main method, its the starting point of your application
+        /// Douglas Richardson's Project 0
+        /// The main method, setups the database connection
         /// </summary>
         /// <param name="args"></param>
         
@@ -25,16 +27,18 @@ namespace StoreUI
 
             //db connection
             string connectionString = configuration.GetConnectionString("P0-Database");
-            DbContextOptions<P0DatabaseContext> options = new DbContextOptionsBuilder<P0DatabaseContext>()
+            DbContextOptions<P0DatabaseContext> options = new DbContextOptionsBuilder<P0DatabaseContext>().EnableSensitiveDataLogging(true)
             .UseSqlServer(connectionString).Options;
-
+            
             //new context
             using var context = new P0DatabaseContext(options);
+            context.ChangeTracker.AutoDetectChangesEnabled = false;
 
-            Console.WriteLine("Welcome to INSERT NAME HERE! ");
+            Console.WriteLine("Welcome to Tog Dog Pet Store! ");
             Console.WriteLine("How may we help you? ");
             //call method that starts main user interface
-            MenuFactory menuFactory = new MenuFactory(new UserBL(),context);
+            UserBL userBL = new UserBL();
+            MenuFactory menuFactory = new MenuFactory(userBL,context, new CartBL(new CartRepo(context, new CartMapper()), new OrderRepo(context, new OrderMapper()),userBL));
             menuFactory.Start();
         }
     }

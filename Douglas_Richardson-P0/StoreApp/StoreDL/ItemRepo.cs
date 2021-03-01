@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
+    /// <summary>
+    /// The item repo handles the changing of the location and quantity for items
+    /// </summary>
     public class ItemRepo
     {
         private Entity.P0DatabaseContext context;
@@ -28,22 +31,24 @@ namespace StoreDL
 
         public void ChangeItemLocation(Model.Item item){
             Entity.Item findItem = context.Items.Find(item.ItemID);
-            
-            //Entity.LocationTable findLocation = context.LocationTables.Find(item.ItemLocation.LocationID);
-            findItem.Location = mapper.ParseLocation(item.ItemLocation);
+            context.Entry(findItem).State = EntityState.Modified;
+            Entity.LocationTable findLocation = context.LocationTables.Find(item.ItemLocation.LocationID);
+            findItem.LocationId = findLocation.Id;
             context.SaveChanges();
             context.ChangeTracker.Clear();
+            context.Entry(findItem).State = EntityState.Detached;
         }
 
         public void ChangeItemQuantity(Model.Item item){
             Entity.Item findItem = context.Items.Find(item.ItemID);
+            context.Entry(findItem).State = EntityState.Modified;
             //context.Entry(findItem).CurrentValues.SetValues(mapper.ParseItem(item));
             findItem.Quantity = item.Quantity;
             //Entity.Product findProduct = context.Products.Find(item.Product.Id);
             //findItem.Quantity = item.Quantity;
             context.SaveChanges();
             context.ChangeTracker.Clear();
-            
+            context.Entry(findItem).State = EntityState.Detached;
         }
     }//class
 }

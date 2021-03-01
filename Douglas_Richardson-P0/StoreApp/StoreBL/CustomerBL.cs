@@ -3,6 +3,9 @@ using StoreDL;
 using System.Collections.Generic;
 namespace StoreBL
 {
+    /// <summary>
+    /// Allows the user to register as a customer
+    /// </summary>
     public class CustomerBL : ICustomerBL
     {
 
@@ -12,22 +15,16 @@ namespace StoreBL
         }
 
         public void AddNewCustomer(Customer customer){
-            List<Customer> newList = GetCustomers();
-            //TODO:New Order History, will be empty
             iCustomerRepo.AddNewCustomer(customer);
         }
         public List<Customer> GetCustomers(){
             return iCustomerRepo.GetCustomers();
         }
         public Customer FindCustomerOnEmail(string emailAddress){
-            List<Customer> theseCustomers = GetCustomers();
-            foreach (Customer c in theseCustomers)
-            {
-                if(c.EmailAddress.Equals(emailAddress)){
-                    return c;
-                }
-            }
-            return null; 
+            return iCustomerRepo.GetCustomerByEmail(emailAddress);
+        }
+        public Customer FindCustomerOnLastName(string lastName){
+            return iCustomerRepo.GetCustomerByLastName(lastName);
         }
     }
 }

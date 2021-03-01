@@ -1,7 +1,7 @@
 namespace StoreModels
 {
     /// <summary>
-    /// This class should contain all the fields and properties that define a store location.
+    /// This class contains all the fields and properties that define a store location.
     /// </summary>
     public class Location
     {
@@ -12,7 +12,6 @@ namespace StoreModels
         public int LocationID {get; set;}
         public string LocationName { get; set; }
         
-        //TODO: add item array list? item interface?
         //public ItemGroup { get; set;}
     }
 }

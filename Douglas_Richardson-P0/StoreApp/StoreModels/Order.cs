@@ -23,5 +23,8 @@ namespace StoreModels
         public int Quantity { get; set; }
         public Item orderItems{get;set;}
         //public List<Item> orderItems{get;set;}
+        public override string ToString(){
+            return Id.ToString()+" "+Location.LocationName+" "+Customer.FirstName;
+        }
     }
 }

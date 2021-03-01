@@ -7,5 +7,6 @@ namespace StoreBL
         void AddNewCustomer(Customer customer);
         List<Customer> GetCustomers();
         Customer FindCustomerOnEmail(string emailAddress);
+        Customer FindCustomerOnLastName(string lastName);
     }
 }

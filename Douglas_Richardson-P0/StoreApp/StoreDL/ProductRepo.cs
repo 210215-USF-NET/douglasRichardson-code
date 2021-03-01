@@ -7,6 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
+    /// <summary>
+    /// Creates new products on the database
+    /// </summary>
     public class ProductRepo
     {
         private Entity.P0DatabaseContext context;

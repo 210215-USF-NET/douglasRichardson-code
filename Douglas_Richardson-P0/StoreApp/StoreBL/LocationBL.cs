@@ -3,6 +3,9 @@ using StoreModels;
 using System.Collections.Generic;
 namespace StoreBL
 {
+    /// <summary>
+    /// Lets the manager create new locations
+    /// </summary>
     public class LocationBL
     {
         LocationRepo locationRepo;
@@ -13,7 +16,15 @@ namespace StoreBL
             locationRepo.AddNewLocation(Location);
         }
         public List<Location> GetLocations(){
-            return locationRepo.GetLocations();
+            List<Location> thisLocationList = locationRepo.GetLocations();
+            //cannot remove items from a list while iterating using foreach
+            for (int i = thisLocationList.Count - 1; i >= 0; i--)
+            {
+                if(thisLocationList[i].LocationName == null){
+                    thisLocationList.RemoveAt(i);
+                }        
+            }
+            return thisLocationList;
         }
     }
 }

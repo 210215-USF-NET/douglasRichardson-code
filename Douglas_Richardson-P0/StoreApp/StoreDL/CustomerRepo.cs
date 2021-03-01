@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
+    /// <summary>
+    /// The customer repo, creates a customer in the database
+    /// </summary>
     public class CustomerRepo : ICustomerRepo
     {
         private Entity.P0DatabaseContext context;
@@ -18,17 +21,27 @@ namespace StoreDL
         }
         public void AddNewCustomer(Model.Customer customer)
         {
-            context.Customers.Add(mapper.ParseCustomer(customer));
+            Entity.Customer newCustomer = mapper.ParseCustomer(customer);
+            context.Entry(newCustomer).State = EntityState.Added;
+            context.Customers.Add(newCustomer);
+            context.Customers.AsNoTracking();
             context.SaveChanges();
+            context.Entry(newCustomer).State = EntityState.Detached;
         }
 
-        public Model.Customer GetCustomerByName(string lastname)
+        public Model.Customer GetCustomerByLastName(string lastname)
         {
+            context.Customers.AsNoTracking();
             return context.Customers.Select(x => mapper.ParseCustomer(x)).ToList().FirstOrDefault(x => x.LastName == lastname);
         }
-
+        public Model.Customer GetCustomerByEmail(string email)
+        {
+            context.Customers.AsNoTracking();
+            return context.Customers.Select(x => mapper.ParseCustomer(x)).ToList().FirstOrDefault(x => x.EmailAddress == email);
+        }
         public List<Model.Customer> GetCustomers()
         {
+            context.Customers.AsNoTracking();
            return context.Customers.Select(x => mapper.ParseCustomer(x)).ToList();
         }
         // private string jsonString;

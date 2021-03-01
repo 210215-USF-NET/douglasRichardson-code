@@ -7,11 +7,14 @@ namespace StoreDL.Mappers
     public class ManagerMapper
     {
         public Model.Manager ParseManager(Entity.Manager manager){
-            return new Model.Manager{
-                FirstName = manager.FirstName,
-                LastName = manager.LastName,
-                EmailAddress = manager.EmailAddress
-            };
+            if(manager.FirstName != null && manager.LastName != null && manager.EmailAddress != null){
+                return new Model.Manager{
+                    FirstName = manager.FirstName,
+                    LastName = manager.LastName,
+                    EmailAddress = manager.EmailAddress
+                };
+            }
+            return new Model.Manager();
         }
         public Entity.Manager ParseManager(Model.Manager manager){
             return new Entity.Manager{

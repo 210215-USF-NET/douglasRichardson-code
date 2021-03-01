@@ -59,3 +59,8 @@ select * from item;
 select * from product;
 select * from cart;
 select * from orderTable;
+
+delete from customers where id = 12;
+delete from customers where id = 2;
+delete from customers where id = 5;
+delete from customers where id = 6;

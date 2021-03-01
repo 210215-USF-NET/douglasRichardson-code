@@ -1,19 +1,45 @@
+using System.ComponentModel.DataAnnotations;
+using System;
 namespace StoreModels
 {
     /// <summary>
-    /// This class should contain necessary properties and fields for customer info.
+    /// The manager model, similar to the customer model
     /// </summary>
     public class Manager
     {
-        //TODO: Create a menu factory and a person factory
         private string firstName;
         private string lastName;
         private string emailAddress;
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string EmailAddress { get; set; }
+        public string FirstName { 
+            get{return firstName;} 
+            set{
+                if(value == null || value.Equals("")){
+                    throw new Exception("Your first name cannot be empty.");
+                }
+                firstName = value;
+            } 
+        }
+        public string LastName { 
+            get{return lastName;} 
+            set{
+                if(value == null || value.Equals("")){
+                    throw new Exception("Your last name cannot be empty.");
+                }
+                lastName = value;
+            } 
+        }
+        public string EmailAddress { 
+            get{return emailAddress;} 
+            set{
+                if(value == null || value.Equals("")){
+                    throw new Exception("Your email address cannot be empty.");
+                }else if(!(new EmailAddressAttribute().IsValid(value))){
+                    throw new Exception("Please type in a valid email address.");
+                }
+                emailAddress = value;
+            } 
+        }
 
-        //TODO: Order history here
     }
 }

@@ -1,5 +1,8 @@
 namespace StoreModels
 {
+    /// <summary>
+    /// My custom exception when the user chooses the wrong item id
+    /// </summary>
     public class InvalidItemIdException : System.Exception
     {
         public InvalidItemIdException() { }

@@ -5,6 +5,9 @@ using System;
 
 namespace StoreBL
 {
+    /// <summary>
+    /// Allows the manager to create and change the location and quantity of items
+    /// </summary>
     public class ItemBL
     {
         private ItemRepo itemRepo;
@@ -23,12 +26,13 @@ namespace StoreBL
         //Give the items to the user
         public List<Item> GetItems(){
             List<Item> gotItems = itemRepo.GetItems();
-            // foreach (Item item in gotItems)
-            // {
-            //     Console.WriteLine(item.Product.ProductName);
-            //     Console.WriteLine(item.ItemLocation.LocationID);
-            //     Console.WriteLine(item.ItemLocation.LocationName);
-            // }
+            //cannot remove items from a list while iterating using foreach
+            for (int i = gotItems.Count - 1; i >= 0; i--)
+            {
+                if(gotItems[i].Product.ProductName == null){
+                    gotItems.RemoveAt(i);
+                }        
+            }
             return gotItems;
         }
     }

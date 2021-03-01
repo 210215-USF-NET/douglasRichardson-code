@@ -5,10 +5,14 @@ using StoreBL;
 using Entity = StoreDL.Entities;
 namespace StoreUI
 {
+    /// <summary>
+    /// The manager product menu, allows the manager to create new products, items and locations.
+    /// </summary>
     public class ProductMenuManager : IMenu
     {
         //active is for the product menu
         bool active = true;
+        private Manager manager;
         private ProductBL productBL;
         private ItemBL itemBL;
         private IUserBL ourUserBL;
@@ -27,13 +31,13 @@ namespace StoreUI
         public void End()
         {
             active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL,context);
+            MenuFactory menuFactory = new MenuFactory(ourUserBL,context,cartBL);
             menuFactory.Start();   
         }
         public void End(Manager manager)
         {
             active = false;
-            MenuFactory menuFactory = new MenuFactory(ourUserBL,context);
+            MenuFactory menuFactory = new MenuFactory(ourUserBL,context,cartBL);
             menuFactory.Start(manager);   
         }
         public void Start(){}
@@ -42,6 +46,7 @@ namespace StoreUI
         //Primary starting point for the manager user
         public void Start(Manager manager)
         {
+            this.manager = manager;
             active = true;
             do{
                 Console.WriteLine("Product Manager Menu");
@@ -50,39 +55,40 @@ namespace StoreUI
                 Console.WriteLine("[3] Change Item Quantity");
                 Console.WriteLine("[4] Change Item Location");
                 Console.WriteLine("[5] Back to Previous Menu");
-                ManagerView(manager);
+                ManagerView();
             }while(active);
         }//start
 
         //The logic behind the manager choices
-        private void ManagerView(Manager manager){
+        private void ManagerView(){
             string userInput = Console.ReadLine();
             switch(userInput){
                 //New product
                 case "1":
-                    NewProductMenu(manager);
+                    NewProductMenu();
                     break;
                 //Add New Location
                 case "2":
-                    AddNewLocation(manager);
+                    AddNewLocation();
                     break;
                 //Change Item Quantity  
                 case "3":
-                    ListItemsMenuManager(manager,true,false);
+                    ListItemsMenuManager(true,false);
                     break;
                 //Change Item Location
                 case "4":
-                    ListItemsMenuManager(manager,false,true);
+                    ListItemsMenuManager(false,true);
                     break;
                 case "5":
                     End(manager);
                     break;
                 default:
+                    Console.WriteLine("Invalid Input, please pick and choose a number. ");
                     break;
             }
         }
      
-        private void NewProductMenu(Manager manager){
+        private void NewProductMenu(){
             Product newProduct = new Product();
             newProduct.Category = Category.Nothing;
             Console.WriteLine("New Product Menu. ");
@@ -151,7 +157,7 @@ namespace StoreUI
         }//End of NewProductMenu
 
         //This method lists all of the items for the manager, and allows them to choose an item to change the item's location or quantity
-        private void ListItemsMenuManager(Manager manager, bool isChangingItemQuantity, bool isChangingItemLocation){
+        private void ListItemsMenuManager(bool isChangingItemQuantity, bool isChangingItemLocation){
             if(isChangingItemQuantity){
                 Console.WriteLine("Change Item Quantity Menu");
             }else{
@@ -214,6 +220,7 @@ namespace StoreUI
             }
         }//ListItemsMenuManager
 
+        //Lets the user give an item an amount
         private void GiveItemQuantityMenu(Item item){
             Console.WriteLine("Please enter the quantity for "+item.Product.ProductName);
             do{
@@ -231,6 +238,7 @@ namespace StoreUI
             }while(active);
         }
 
+        //Lets the user assign a location to an item
         private void GiveItemLocationMenu(Item item){
             Console.WriteLine("Choose a new location for an item");
             List<Location> thisLocationList = new List<Location>();
@@ -249,7 +257,7 @@ namespace StoreUI
                 Console.WriteLine("There are no locations.");
                 active = false;
             }
-            do{
+            while(active){
                 try{
                     string userInput = Console.ReadLine();
                     int choice = Int32.Parse(userInput);
@@ -272,10 +280,11 @@ namespace StoreUI
                     Console.WriteLine("Not a valid location id. ");
                 }
                 catch(Exception e){Console.WriteLine(e.ToString());}
-            }while(active);
+            }
         }
 
-        private void AddNewLocation(Manager manager){
+        //Creates a new location and sends it to the BL
+        private void AddNewLocation(){
             Console.WriteLine("Please enter a new location");
             Location location = new Location();
             do{
@@ -300,6 +309,7 @@ namespace StoreUI
                     Console.WriteLine(e.ToString());
                 }
             }while(active);
-        }
+        }//AddNewLocation 
+
     }//class
 }

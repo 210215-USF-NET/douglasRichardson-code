@@ -6,23 +6,26 @@ using Mapper = StoreDL.Mappers;
 using StoreModels;
 namespace StoreUI
 {
+    /// <summary>
+    /// The main menu, sends the user to different locations in the program
+    /// </summary>
     public class MenuFactory : IMenu
     {
         Boolean active = true;
-        
+        Manager manager;
         //main userBL
         private IUserBL ourUserBL;
         private Entity.P0DatabaseContext context;
-        public MenuFactory(IUserBL newUserBL, Entity.P0DatabaseContext context){
+        private CartBL cartBL;
+        public MenuFactory(IUserBL newUserBL, Entity.P0DatabaseContext context, CartBL cartBL){
             ourUserBL = newUserBL;
             this.context = context;
+            this.cartBL = cartBL;
         }
 
         public void End(){
             active = false;
         }
-
-        //TODO: user input validation/cleaning
 
         public void Start(){
             do{
@@ -37,19 +40,23 @@ namespace StoreUI
         }//End of start()
         
         public void Start(Manager manager){
+            this.manager = manager;
+            active = true;
             do{
                 if(ourUserBL.LogUserIn){
                     Console.WriteLine("Hello "+manager.LastName);
                     Console.WriteLine("Choose from one of the following by entering a number. ");
-                    Console.WriteLine("[1] View Products ");
+                    Console.WriteLine("[1] View Product Menu");
                     Console.WriteLine("[2] View Order Histories from Locations");
-                    Console.WriteLine("[3] Logout");
+                    Console.WriteLine("[3] Search a Customer");
+                    Console.WriteLine("[4] Logout");
                     ManagerIsLoggedIn(manager);
                 }
             }while(active);
         }
 
         public void Start(Customer customer){
+            active = true;
             do{
                 if(ourUserBL.LogUserIn){
                     Console.WriteLine("Hello "+customer.FirstName);
@@ -59,6 +66,8 @@ namespace StoreUI
                     Console.WriteLine("[3] View Order History");
                     Console.WriteLine("[4] Logout");
                     CustomerIsLoggedIn(customer);
+                }else{
+                    Start();
                 }
             }while(active);
 
@@ -75,7 +84,8 @@ namespace StoreUI
                         new CustomerBL(new CustomerRepo(context, new CustomerMapper())), 
                         new ManagerBL(new ManagerRepo(context, new Mapper.ManagerMapper())), 
                         ourUserBL,
-                        context);
+                        context,
+                        cartBL);
                     customerLoginMenu.Start();
                     break;
                 //Register
@@ -85,14 +95,15 @@ namespace StoreUI
                         new CustomerBL(new CustomerRepo(context, new CustomerMapper())), 
                         new ManagerBL(new ManagerRepo(context, new Mapper.ManagerMapper())), 
                         ourUserBL,
-                        context);
+                        context,
+                        cartBL);
                     customerRegisterMenu.Start();
                     break;
                 //View Cart
                 case "3":
                     End();
                     CartMenu cartMenu = new CartMenu(null,
-                    new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                    cartBL,
                     ourUserBL,
                     context);
                     cartMenu.Start();
@@ -104,7 +115,7 @@ namespace StoreUI
                         new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
                         new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
-                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                        cartBL,
                         context);
                     productMenu.Start(null);
                     End();
@@ -133,7 +144,7 @@ namespace StoreUI
                         new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
                         new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
-                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                        cartBL,
                         context);
                     productMenu.Start(customer);
                     break;
@@ -141,7 +152,7 @@ namespace StoreUI
                 case "2":
                     End();
                     CartMenu cartMenu = new CartMenu(customer,
-                    new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
+                    cartBL,
                     ourUserBL,
                     context);
                     cartMenu.Start();
@@ -149,7 +160,8 @@ namespace StoreUI
                 //View Order History
                 case "3":
                     End();
-                    OrderHistoryMenu orderHistoryMenu = new OrderHistoryMenu();
+                    OrderHistoryMenu orderHistoryMenu = new OrderHistoryMenu(customer,cartBL,ourUserBL,context,
+                    new OrderBL(new OrderRepo(context, new Mapper.OrderMapper()),ourUserBL));
                     orderHistoryMenu.Start();
                     break;
                 //Logout
@@ -178,27 +190,72 @@ namespace StoreUI
                         new ItemBL(new ItemRepo(context, new Mapper.ItemMapper())),
                         ourUserBL,
                         new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
-                        new CartBL(new CartRepo(context, new Mapper.CartMapper()), new OrderRepo()),
-                        context);
+                        cartBL,
+                        context
+                        );
                     productMenu.Start(manager);
                     break;
                 //View Order Histories from location
                 case "2":
                     End();
-                    OrderHistoryMenu orderHistoryMenu = new OrderHistoryMenu();
-                    orderHistoryMenu.Start();
+                    OrderHistoryLocationMenu OrderHistoryLocationMenu = new OrderHistoryLocationMenu(
+                        manager,
+                        cartBL,
+                        ourUserBL,
+                        new LocationBL(new LocationRepo(context, new Mapper.LocationMapper())),
+                        context,
+                        new OrderBL(new OrderRepo(context, new Mapper.OrderMapper()),ourUserBL)
+                    );
+                    OrderHistoryLocationMenu.Start();
                     break;
-                //Log Out
+               
+                //Search customer
                 case "3":
+                    SearchForACustomer();
+                    break;
+                     //Log Out
+                case "4":
                     Console.WriteLine("Good work! Come back tomorrow. ");
                     ourUserBL.IsUserManager = false;
                     ourUserBL.LogUserIn = false;
                     Start();
-                    break;      
+                    break;        
                 default:
-                    Console.WriteLine("Invalid Input, please choose and type a number. ");
+                    Console.WriteLine("Invalid Input, please pick and choose a number. ");
                     break;
 
+            }
+        }
+
+        //Searches for a customer by their last name on the database
+        private void SearchForACustomer(){ 
+            while(active){
+                try{
+                    Console.WriteLine("Please type in a customer's last name");
+                    string userInput = Console.ReadLine();
+                    if(userInput != null && userInput != ""){
+                        if(userInput.Equals("!stop")){
+                            Start(manager);
+                            active = false;
+                        }
+                        CustomerBL newCustomerBL = new CustomerBL(new CustomerRepo(context, new CustomerMapper()));
+                        Customer foundCustomer = newCustomerBL.FindCustomerOnLastName(userInput);
+                        if(foundCustomer != null){
+                            Console.WriteLine();
+                            Console.WriteLine("Their customer id is: "+foundCustomer.Id);
+                            Console.WriteLine("Their first name is: "+foundCustomer.FirstName);
+                            Console.WriteLine("Their last name is: "+foundCustomer.LastName);
+                            Console.WriteLine("Their email address is: "+foundCustomer.EmailAddress);   
+                            Console.WriteLine();    
+                            Start(manager);
+                            active = false;
+                        }else{
+                            Console.WriteLine("There is no customer by that last name.");
+                            Start(manager);
+                            active = false;
+                        }   
+                    }
+                }catch(Exception){}
             }
         }
     }//End of class

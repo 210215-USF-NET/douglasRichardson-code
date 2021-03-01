@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 namespace StoreDL
 {
+    /// <summary>
+    /// Handles the creation of managers in the database
+    /// </summary>
     public class ManagerRepo : IManagerRepo
     {
         private Entity.P0DatabaseContext context;
@@ -20,6 +23,11 @@ namespace StoreDL
         {
             context.Managers.Add(mapper.ParseManager(manager));
             context.SaveChanges();
+        }
+
+        public Model.Manager GetManagerByEmail(string email)
+        {
+            return context.Managers.Select(x => mapper.ParseManager(x)).ToList().FirstOrDefault(x => x.EmailAddress == email);
         }
 
         public List<Model.Manager> GetManagers()

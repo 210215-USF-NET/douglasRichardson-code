@@ -2,6 +2,9 @@ using System.ComponentModel;
 
 namespace StoreModels
 {
+    /// <summary>
+    /// The product category
+    /// </summary>
     [DefaultValue(Category.Nothing)]
     public enum Category
     {

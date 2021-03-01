@@ -4,6 +4,10 @@ using StoreBL;
 using Entity = StoreDL.Entities;
 namespace StoreUI
 {
+
+    /// <summary>
+    /// Allows the user to register to be a customer or a manager
+    /// </summary>
     public class CustomerRegisterMenu : IMenu
     {
         bool active = true; //whether the menu is active in the console
@@ -13,16 +17,18 @@ namespace StoreUI
         private IManagerBL managerBL;
         private IUserBL userBL;
         private Entity.P0DatabaseContext context;
-        public CustomerRegisterMenu(ICustomerBL newCustomerBL, IManagerBL newManagerBL, IUserBL newUserBL, Entity.P0DatabaseContext context){
+        private CartBL cartBL;
+        public CustomerRegisterMenu(ICustomerBL newCustomerBL, IManagerBL newManagerBL, IUserBL newUserBL, Entity.P0DatabaseContext context, CartBL cartBL){
             customerBL = newCustomerBL;
             managerBL = newManagerBL;
             userBL = newUserBL;
             this.context = context;
+            this.cartBL = cartBL;
         }
 
         public void End(){
             active = false;
-            MenuFactory menuFactory = new MenuFactory(userBL,context);
+            MenuFactory menuFactory = new MenuFactory(userBL,context,cartBL);
             menuFactory.Start();   
         }
         public void End(Manager manager){
@@ -30,35 +36,46 @@ namespace StoreUI
             managerBL.AddNewManager(manager);
             userBL.LogUserIn = true;
             userBL.IsUserManager = true;
-            MenuFactory menuFactory = new MenuFactory(userBL,context);
+            MenuFactory menuFactory = new MenuFactory(userBL,context,cartBL);
             menuFactory.Start(manager);   
         }
         public void End(Customer customer){
             active = false;
             customerBL.AddNewCustomer(customer);
+
+            Customer tempCustomer = customerBL.FindCustomerOnEmail(customer.EmailAddress);
+            customer.Id = tempCustomer.Id;
             userBL.LogUserIn = true;
             userBL.IsUserManager = false;
-            MenuFactory menuFactory = new MenuFactory(userBL,context);
+            if(userBL.CartID == null || userBL.CartID == 0){
+                userBL.CartID = cartBL.GetCustomerCart(customer);
+                if(userBL.CartID == 0){
+                    userBL.CartID = cartBL.NewCart();
+                    cartBL.AddCustomer(customer,userBL.CartID);
+                }
+            }else{
+                Console.WriteLine("RegisteR: "+userBL.CartID);
+                cartBL.AddCustomer(customer,userBL.CartID);
+            }
+            MenuFactory menuFactory = new MenuFactory(userBL,context,cartBL);
             menuFactory.Start(customer);   
         }
         public void Start(){
             //For customer or manager, like the fields on a webpage, before its sent to the server
-            string firstName = null;
-            string lastName = null; 
-            string emailAddress = null;
+            Customer newCustomer = new Customer();
             Console.WriteLine("New Customer Menu. ");
             Console.WriteLine("Type !stop to exit out of this menu.");
 
             do{
                 //let the user know
-                if(firstName == null){
+                if(newCustomer.FirstName == null){
                     Console.WriteLine("Please type your first name. ");
-                }else if(lastName == null){
+                }else if(newCustomer.LastName == null){
                     Console.WriteLine("Please type your last name. ");
-                }else if(emailAddress == null){
+                }else if(newCustomer.EmailAddress == null){
                     Console.WriteLine("Please type a valid email address. ");
                 }else{
-                    Console.WriteLine("Do you want to be a manager? ");
+                    Console.WriteLine("Do you want to be a manager? Yes or No");
                 }
 
                 //Get userinput
@@ -67,28 +84,25 @@ namespace StoreUI
                     if(userInput.Equals("!stop")){ 
                         End();     
                     }
-                    if(firstName == null){
-                        firstName = userInput;
-                    }else if(lastName == null){
-                        lastName = userInput;
-                    }else if(emailAddress == null){
-                        emailAddress = userInput;
+                    if(newCustomer.FirstName == null){
+                        newCustomer.FirstName = userInput;
+                    }else if(newCustomer.LastName == null){
+                        newCustomer.LastName = userInput;
+                    }else if(newCustomer.EmailAddress == null){
+                        newCustomer.EmailAddress = userInput;
                     }else{
                         //Finish making customer
-                        //TODO: Let user review what they input?'
                         //TODO: Log to a file that a customer was created.
+                        userInput = userInput.ToLower();
                         if(userInput.Equals("no") || userInput.Equals("n")){
-                            Customer newCustomer = new Customer();
-                            newCustomer.FirstName = firstName;
-                            newCustomer.LastName = lastName;
-                            newCustomer.EmailAddress = emailAddress;
                             Console.WriteLine("Welcome "+newCustomer.FirstName+"!");
                             End(newCustomer);
                         }else if(userInput.Equals("yes") || userInput.Equals("y")){
                             Manager newManager = new Manager();
-                            newManager.FirstName = firstName;
-                            newManager.LastName = lastName;
-                            newManager.EmailAddress = emailAddress;
+                            newManager.FirstName = newCustomer.FirstName;
+                            newManager.LastName = newCustomer.LastName;
+                            newManager.EmailAddress = newCustomer.EmailAddress;
+                            newCustomer = null;
                             Console.WriteLine("Welcome aboard "+newManager.FirstName+" as a new manager!");
                             End(newManager);
                         }
@@ -96,7 +110,7 @@ namespace StoreUI
                     }//End of if !stop
                 }catch(Exception e){
                     //TODO: Log exception?, use NLOG? serilog?
-                    Console.WriteLine("Error: "+e.ToString());
+                    Console.WriteLine(e.Message);
                 }
            }while(active);
         }//End of start
