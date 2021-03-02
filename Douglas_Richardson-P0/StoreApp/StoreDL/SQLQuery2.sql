@@ -40,17 +40,21 @@ create table cart(
 	customer_id int references customers(id),
 	quantity int,
 	location_id int references locationTable(id),
-	total float,
 	item_id int references item(id),
 ); 
 create table orderTable(
 	id int identity primary key,
 	customer_id int references customers(id),
-	quantity int,
 	location_id int references locationTable(id),
 	total float,
-	item_id int references item(id)
 );  
+create table orderItems(
+	id int identity primary key,
+	customer_id int references customers(id),
+	quantity int,
+	location_id int references locationTable(id),
+	item_id int references item(id),
+);
 
 select * from customers;
 select * from managers;
@@ -59,6 +63,7 @@ select * from item;
 select * from product;
 select * from cart;
 select * from orderTable;
+select * from orderItems;
 
 delete from customers where id = 12;
 delete from customers where id = 2;

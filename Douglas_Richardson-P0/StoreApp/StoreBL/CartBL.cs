@@ -35,6 +35,7 @@ namespace StoreBL
 
         public void NewCartOrder(){
             cartOrder = new Order();
+            cartID = 0;
         }
 
         public int? GetCustomerCart(Customer customer){
