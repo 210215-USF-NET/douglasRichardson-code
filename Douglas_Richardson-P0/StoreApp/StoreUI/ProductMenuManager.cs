@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using StoreModels;
 using StoreBL;
 using Entity = StoreDL.Entities;
+using Serilog;
 namespace StoreUI
 {
     /// <summary>
@@ -26,6 +27,9 @@ namespace StoreUI
             locationBL = newLocationBL;
             cartBL = newCartBL;
             this.context = context;
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
         }
 
         public void End()
@@ -232,8 +236,10 @@ namespace StoreUI
                     active = false;
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
+                }catch(NumberCannotBeNegative){
+                    Console.WriteLine("The number cannot be negative. ");
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }
             }while(active);
         }
@@ -279,7 +285,9 @@ namespace StoreUI
                 }catch(InvalidItemIdException){
                     Console.WriteLine("Not a valid location id. ");
                 }
-                catch(Exception e){Console.WriteLine(e.ToString());}
+                catch(Exception e){
+                    Log.Error(e.ToString());
+                }
             }
         }
 
@@ -306,7 +314,7 @@ namespace StoreUI
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }
             }while(active);
         }//AddNewLocation 

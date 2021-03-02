@@ -5,6 +5,7 @@ using Entity = StoreDL.Entities;
 //using Mapper = StoreDL.Mappers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Collections.Generic;
 namespace StoreDL
 {
@@ -18,6 +19,11 @@ namespace StoreDL
         public CustomerRepo(Entity.P0DatabaseContext context, CustomerMapper mapper){
             this.mapper = mapper;
             this.context = context;
+
+            // /rollingInterval: RollingInterval.Day lets you log every day
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
         }
         public void AddNewCustomer(Model.Customer customer)
         {
@@ -27,6 +33,7 @@ namespace StoreDL
             context.Customers.AsNoTracking();
             context.SaveChanges();
             context.Entry(newCustomer).State = EntityState.Detached;
+            Log.Information("New Customer created. "+newCustomer.Id+" Email: "+newCustomer.EmailAddress);
         }
 
         public Model.Customer GetCustomerByLastName(string lastname)

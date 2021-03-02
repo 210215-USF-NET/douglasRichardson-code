@@ -34,6 +34,12 @@ namespace StoreUI
             using var context = new P0DatabaseContext(options);
             context.ChangeTracker.AutoDetectChangesEnabled = false;
 
+            //   __      _
+            // o'')}____//
+            // `_/      )
+            // (_(_/-(_/
+
+            Console.Clear();
             Console.WriteLine("Welcome to Tog Dog Pet Store! ");
             Console.WriteLine("How may we help you? ");
             //call method that starts main user interface

@@ -22,10 +22,12 @@ namespace StoreDL
         public int? AddNewCart(Model.Order order)
         {
             Entity.Cart newCart = mapper.ParseOrder(order);
+            context.Entry(newCart).State = EntityState.Added;
             context.Carts.Add(newCart);
-            Console.WriteLine("new order");
+            //Console.WriteLine("new order");
             context.SaveChanges();
             context.ChangeTracker.Clear();
+            context.Entry(newCart).State = EntityState.Detached;
             return newCart.Id;
         }
 
@@ -42,12 +44,12 @@ namespace StoreDL
             if(result.Customer == null && order.Customer != null){
                 result = GetCartWithCustomer(cartID,order.Customer.Id);
             }
-            Console.WriteLine("result id "+result.Id);
+            //Console.WriteLine("result id "+result.Id);
             if(result != null){
                 Entity.Cart thisOrder = new Mapper.CartMapper().ParseOrder(result);
                 thisOrder.Id = (int)cartID;
                 context.Entry(thisOrder).State = EntityState.Modified;
-                Console.WriteLine("cartID: "+cartID);
+                //Console.WriteLine("cartID: "+cartID);
                             
                 if(order.Customer != null){
                     thisOrder.CustomerId = order.Customer.Id;
@@ -161,8 +163,8 @@ namespace StoreDL
             //context.Carts.Remove(convertOrder);
             try{
                 context.SaveChanges();
-            }catch(Exception e){
-                Console.WriteLine(e.ToString());
+            }catch(Exception){
+                //Console.WriteLine(e.ToString());
             }
             context.Entry(convertOrder).State = EntityState.Detached;
             context.ChangeTracker.Clear();

@@ -6,6 +6,7 @@ using Mapper = StoreDL.Mappers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Serilog;
 namespace StoreDL
 {
     /// <summary>
@@ -18,11 +19,15 @@ namespace StoreDL
         public ManagerRepo(Entity.P0DatabaseContext context, Mapper.ManagerMapper mapper){
             this.mapper = mapper;
             this.context = context;
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
         }
         public void AddNewManager(Model.Manager manager)
         {
             context.Managers.Add(mapper.ParseManager(manager));
             context.SaveChanges();
+            Log.Information("New manager was created. ");
         }
 
         public Model.Manager GetManagerByEmail(string email)

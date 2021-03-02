@@ -6,6 +6,7 @@ using Mapper = StoreDL.Mappers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Serilog;
 namespace StoreDL
 {
     /// <summary>
@@ -18,6 +19,10 @@ namespace StoreDL
         public OrderRepo(Entity.P0DatabaseContext context, Mapper.OrderMapper mapper){
             this.mapper = mapper;
             this.context = context;
+
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
         }
         public int? PushOrder(Model.Order order)
         {
@@ -26,9 +31,10 @@ namespace StoreDL
             newOrder.LocationId = order.Location.LocationID;
             newOrder.ItemId = order.orderItems.ItemID;
             context.OrderTables.Add(newOrder);
-
             context.SaveChanges();
             context.Entry(newOrder).State = EntityState.Detached;
+
+            Log.Information("New order was created. "+newOrder.Id);
             return newOrder.Id;
         }
 

@@ -29,7 +29,6 @@ namespace StoreDL.Mappers
             }            
         }
         public Entity.Cart ParseOrder(Model.Order Order){
-            Console.WriteLine(Order.Id);
             
             if(Order.Id == null){
                 return new Entity.Cart{
@@ -41,7 +40,6 @@ namespace StoreDL.Mappers
                 };
             }
             if(Order.Customer != null){
-                Console.WriteLine(new CustomerMapper().ParseCustomer(Order.Customer).EmailAddress);
                 return new Entity.Cart{
                     Customer = new CustomerMapper().ParseCustomer(Order.Customer),
                     Total = Order.Total,

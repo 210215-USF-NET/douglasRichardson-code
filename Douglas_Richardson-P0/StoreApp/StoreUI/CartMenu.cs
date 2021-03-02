@@ -40,10 +40,10 @@ namespace StoreUI
                     if(ourUserBL.CartID == null){
                         ourUserBL.CartID = cartBL.GetCustomerCart(customer);
                     }
-                    Console.WriteLine("ourUserBL.cartid with customer: "+ourUserBL.CartID);
+                    //Console.WriteLine("ourUserBL.cartid with customer: "+ourUserBL.CartID);
                     thisCartOrder = cartBL.GetOrder(ourUserBL.CartID);
                 }else{
-                    Console.WriteLine("ourUserBL.cartid: "+ourUserBL.CartID);
+                    //Console.WriteLine("ourUserBL.cartid: "+ourUserBL.CartID);
                     thisCartOrder = cartBL.GetCartOrderWithNoCustomer(ourUserBL.CartID);
                 }
                 
@@ -95,7 +95,7 @@ namespace StoreUI
                         case "2":
                             Console.WriteLine("Cart has been emptied");
                             ourUserBL.CartID = cartBL.EmptyCart(ourUserBL.CartID);
-                            Console.WriteLine("Cart :"+ourUserBL.CartID);
+                            //Console.WriteLine("Cart :"+ourUserBL.CartID);
                             End(customer);
                             break;
                         case "3":

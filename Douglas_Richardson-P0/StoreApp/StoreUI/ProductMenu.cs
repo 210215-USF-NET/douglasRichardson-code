@@ -143,7 +143,7 @@ namespace StoreUI
                         //List all the items in the store
                         foreach (Item item in thisItemList){
                             if(item.ItemLocation != null){
-                                if(item.ItemLocation.LocationID == location.LocationID){
+                                if(item.ItemLocation.LocationID == location.LocationID && item.Quantity > 0){
                                     Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" Price: "+item.Product.Price+" Quantity: "+item.Quantity);
                                     noItemsInStore = false;
                                 }
@@ -174,7 +174,7 @@ namespace StoreUI
                             List<Item> thisItemList = itemBL.GetItems();
                             foreach (Item item in thisItemList){
                                 if(item.ItemLocation != null){
-                                    if(choice == item.ItemID && item.ItemLocation.LocationID == location.LocationID){
+                                    if(choice == item.ItemID && item.ItemLocation.LocationID == location.LocationID && item.Quantity > 0){
                                         choosingItem = false;
                                         int AmountInCart = 0;//cartBL.GetAmountOfItem(item);
                                         if((item.Quantity-AmountInCart)==0){

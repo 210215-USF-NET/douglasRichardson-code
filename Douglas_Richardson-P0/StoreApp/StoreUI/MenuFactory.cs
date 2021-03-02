@@ -169,6 +169,9 @@ namespace StoreUI
                     Console.WriteLine("Have a good day! "+customer.FirstName);
                     ourUserBL.IsUserManager = false;
                     ourUserBL.LogUserIn = false;
+                    customer = null;
+                    ourUserBL.CartID = 0;
+                    cartBL.NewCartOrder();
                     Start();
                     break; 
                 default:
@@ -218,6 +221,9 @@ namespace StoreUI
                     Console.WriteLine("Good work! Come back tomorrow. ");
                     ourUserBL.IsUserManager = false;
                     ourUserBL.LogUserIn = false;
+                    manager = null;
+                    ourUserBL.CartID = 0;
+                    cartBL.NewCartOrder();
                     Start();
                     break;        
                 default:

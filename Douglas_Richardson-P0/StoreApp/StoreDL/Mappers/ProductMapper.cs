@@ -10,14 +10,16 @@ namespace StoreDL.Mappers
             return new Model.Product{
                 Price = (double) Product.Price,
                 ProductName = Product.ProductName,
-                Category = (Model.Category) Product.Category
+                Category = (Model.Category) Product.Category,
+                Id = (int)Product.Id
             };
         }
         public Entity.Product ParseProduct(Model.Product Product){
             return new Entity.Product{
                 ProductName = Product.ProductName,
                 Price = Product.Price,
-                Category = (int) Product.Category
+                Category = (int) Product.Category,
+                Id = (int)Product.Id
             };
         }
     }

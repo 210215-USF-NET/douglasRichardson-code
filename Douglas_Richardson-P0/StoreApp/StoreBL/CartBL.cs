@@ -1,7 +1,7 @@
 using StoreDL;
 using StoreModels;
 using System;
-
+using Serilog;
 namespace StoreBL
 {   
     public class CartBL
@@ -15,19 +15,26 @@ namespace StoreBL
         public Order cartOrder;
         private IUserBL userBL;
         private int? cartID;
-        private double cartTotal;
+        
         public CartBL(CartRepo newCartRepo, OrderRepo newOrderRepo, IUserBL newUserBL){
             cartRepo = newCartRepo;
             orderRepo = newOrderRepo;
             userBL = newUserBL;
             cartOrder = new Order(); 
-            
+
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
             // cartOrder = cartRepo.GetCartOrder(cartID);
             // if(cartOrder == null){
             //     cartOrder = new Order();
             //     cartOrder.orderItems = new Item();
                 //cartOrder.orderItems = new List<Item>();
             
+        }
+
+        public void NewCartOrder(){
+            cartOrder = new Order();
         }
 
         public int? GetCustomerCart(Customer customer){
@@ -49,13 +56,10 @@ namespace StoreBL
                 cartOrder.Customer = customer;
                 cartOrder.Customer.Id = customer.Id;
                 if(cartID != null && cartID != 0){
-                    Console.WriteLine("cartID: "+cartID);
-                    Console.WriteLine("customer: "+customer.FirstName);
                     try{
-                        Console.WriteLine("customer: "+cartOrder.Customer.Id);
                         cartRepo.UpdateCart(cartID,cartOrder);
                     }catch(Exception e){
-                        Console.WriteLine(e.ToString());
+                        Log.Error(e.ToString());
                     }
                     
                     // Order getCartOrder = cartRepo.GetCartOrder(cartID);
@@ -140,7 +144,7 @@ namespace StoreBL
 
         //Empties the cart on the database and locally
         public int? EmptyCart(int? cartId){
-            Console.WriteLine("The cart id: "+cartId);
+            //Console.WriteLine("The cart id: "+cartId);
             cartOrder = new Order();
             cartRepo.EmptyCart(cartId);
             return cartId;
@@ -154,7 +158,7 @@ namespace StoreBL
                     orderRepo.PushOrder(getCartOrder);
                     cartRepo.EmptyCart(userBL.CartID);
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }  
             }
         }
