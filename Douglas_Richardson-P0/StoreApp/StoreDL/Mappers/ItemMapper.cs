@@ -9,12 +9,15 @@ namespace StoreDL.Mappers
     public class ItemMapper
     {
         public Model.Item ParseItem(Entity.Item Item){
-            return new Model.Item{
-                Product = new ProductMapper().ParseProduct(Item.Product),
-                ItemID = Item.Id,
-                ItemLocation = new LocationMapper().ParseLocation(Item.Location),
-                Quantity = (int) Item.Quantity
-            };
+            if(Item.Product != null){
+                return new Model.Item{
+                    Product = new ProductMapper().ParseProduct(Item.Product),
+                    ItemID = Item.Id,
+                    ItemLocation = new LocationMapper().ParseLocation(Item.Location),
+                    Quantity = (int) Item.Quantity
+                };
+            }
+            return null;
         }
         public Entity.Item ParseItem(Model.Item Item){
             

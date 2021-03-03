@@ -6,6 +6,7 @@ using Mapper = StoreDL.Mappers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Serilog;
 namespace StoreDL
 {
     /// <summary>
@@ -151,6 +152,25 @@ namespace StoreDL
         //     Model.Order cartOrder = GetCartOrder();
         //     return cartOrder.Total;
         // }
+
+        public void EmptyCartNoCustomer(int? cartId){
+            Model.Order result = GetCartOrderWithNoCustomer(cartId);
+            Entity.Cart convertOrder= new Mapper.CartMapper().ParseOrder(result);
+            context.Entry(convertOrder).State = EntityState.Modified;
+            convertOrder.LocationId = null;
+            convertOrder.ItemId = null;
+            convertOrder.Quantity = 0;
+            convertOrder.Total = 0.0;
+            //context.Carts.Remove(convertOrder);
+            try{
+                context.SaveChanges();
+            }catch(Exception e){
+                Log.Error(e.ToString());
+            }
+            context.Entry(convertOrder).State = EntityState.Detached;
+            context.ChangeTracker.Clear();
+        }
+
         public void EmptyCart(int? cartId){
             Model.Order result = GetCartOrder(cartId);
             Entity.Cart convertOrder= new Mapper.CartMapper().ParseOrder(result);
@@ -163,8 +183,8 @@ namespace StoreDL
             //context.Carts.Remove(convertOrder);
             try{
                 context.SaveChanges();
-            }catch(Exception){
-                //Console.WriteLine(e.ToString());
+            }catch(Exception e){
+                Log.Error(e.ToString());
             }
             context.Entry(convertOrder).State = EntityState.Detached;
             context.ChangeTracker.Clear();

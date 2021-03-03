@@ -19,10 +19,6 @@ namespace StoreDL
         public OrderRepo(Entity.P0DatabaseContext context, Mapper.OrderMapper mapper){
             this.mapper = mapper;
             this.context = context;
-
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
         public int? PushOrder(Model.Order order)
         {

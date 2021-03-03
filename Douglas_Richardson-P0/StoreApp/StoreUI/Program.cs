@@ -6,6 +6,7 @@ using StoreDL.Mappers;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 namespace StoreUI
 {
     class Program
@@ -33,6 +34,12 @@ namespace StoreUI
             //new context
             using var context = new P0DatabaseContext(options);
             context.ChangeTracker.AutoDetectChangesEnabled = false;
+
+            //rollingInterval: RollingInterval.Day lets you log every day
+            Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
 
             //   __      _
             // o'')}____//

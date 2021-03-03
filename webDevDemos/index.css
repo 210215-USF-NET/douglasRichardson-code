@@ -1,0 +1,15 @@
+.csstalk, .pseudo{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: blue;
+}
+#id{
+    color: #9e9e9e;
+}
+.pseudo:hover{
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    background-color: azure;
+}
+.pel::first-letter{
+    font-size: large;
+    color: blueviolet;
+}

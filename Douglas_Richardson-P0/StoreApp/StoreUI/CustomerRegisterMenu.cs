@@ -1,6 +1,7 @@
 using System;
 using StoreModels;
 using StoreBL;
+using Serilog;
 using Entity = StoreDL.Entities;
 namespace StoreUI
 {
@@ -54,7 +55,6 @@ namespace StoreUI
                     cartBL.AddCustomer(customer,userBL.CartID);
                 }
             }else{
-                Console.WriteLine("RegisteR: "+userBL.CartID);
                 cartBL.AddCustomer(customer,userBL.CartID);
             }
             MenuFactory menuFactory = new MenuFactory(userBL,context,cartBL);
@@ -89,10 +89,10 @@ namespace StoreUI
                     }else if(newCustomer.LastName == null){
                         newCustomer.LastName = userInput;
                     }else if(newCustomer.EmailAddress == null){
+                        customerBL.CheckIfEmailExists(userInput);
                         newCustomer.EmailAddress = userInput;
                     }else{
                         //Finish making customer
-                        //TODO: Log to a file that a customer was created.
                         userInput = userInput.ToLower();
                         if(userInput.Equals("no") || userInput.Equals("n")){
                             Console.WriteLine("Welcome "+newCustomer.FirstName+"!");
@@ -108,9 +108,10 @@ namespace StoreUI
                         }
                         
                     }//End of if !stop
+                }catch(EmailExistsException){
+                    Console.WriteLine("The given email address is already in use. ");
                 }catch(Exception e){
-                    //TODO: Log exception?, use NLOG? serilog?
-                    Console.WriteLine(e.Message);
+                    Log.Error(e.ToString());
                 }
            }while(active);
         }//End of start

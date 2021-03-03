@@ -13,9 +13,6 @@ namespace StoreBL
         private ItemRepo itemRepo;
         public ItemBL(ItemRepo newItemRepo){
             itemRepo = newItemRepo;
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
         public void AddItemToRepo(Item Item){
             itemRepo.AddNewItem(Item);
@@ -35,12 +32,19 @@ namespace StoreBL
         public List<Item> GetItems(){
             List<Item> gotItems = itemRepo.GetItems();
             //cannot remove items from a list while iterating using foreach
-            for (int i = gotItems.Count - 1; i >= 0; i--)
-            {
-                if(gotItems[i].Product.ProductName == null){
-                    gotItems.RemoveAt(i);
-                }        
+            if(gotItems != null){
+                for (int i = gotItems.Count - 1; i >= 0; i--)
+                {
+                    if(gotItems[i] != null){
+                        if(gotItems[i].Product.ProductName == null){
+                            gotItems.RemoveAt(i);
+                        }        
+                    }else{
+                        gotItems.RemoveAt(i);
+                    }
+                }
             }
+            
             return gotItems;
         }
     }

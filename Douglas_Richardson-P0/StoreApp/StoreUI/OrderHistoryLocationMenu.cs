@@ -41,7 +41,6 @@ namespace StoreUI
         public void Start()
         {
             active = true;
-            Console.WriteLine("Choose a location to look at its order history");
             List<Location> thisLocationList = new List<Location>();
             try{
                 thisLocationList = locationBL.GetLocations();
@@ -49,13 +48,17 @@ namespace StoreUI
                 Console.WriteLine(e.ToString());
             }
             
-            if(thisLocationList.Count != 0){
-                foreach (Location location in thisLocationList)
-                {
-                    Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+            if(thisLocationList != null){
+                if(thisLocationList.Count != 0){
+                    Console.WriteLine("Choose a location to look at its order history");
+                    foreach (Location location in thisLocationList)
+                    {
+                        Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+                    }
                 }
             }else{
                 Console.WriteLine("There are no locations.");
+                End(manager);
                 active = false;
             }
             while(active){

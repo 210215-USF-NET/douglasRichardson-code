@@ -20,8 +20,11 @@ namespace StoreDL
         }
         public void AddNewItem(Model.Item Item)
         {
-            context.Items.Add(mapper.ParseItem(Item));
+            Entity.Item newItem = mapper.ParseItem(Item);
+            //context.Entry(newItem).State = EntityState.Added;
+            context.Items.Add(newItem);
             context.SaveChanges();
+            context.Entry(newItem).State = EntityState.Detached;
         }
 
         public List<Model.Item> GetItems()

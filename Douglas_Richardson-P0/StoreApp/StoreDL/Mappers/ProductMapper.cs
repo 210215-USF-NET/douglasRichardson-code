@@ -2,6 +2,7 @@ using Model = StoreModels;
 using Entity = StoreDL.Entities;
 using System.Linq;
 using System.Collections.Generic;
+using System;
 namespace StoreDL.Mappers
 {
     public class ProductMapper
@@ -15,12 +16,16 @@ namespace StoreDL.Mappers
             };
         }
         public Entity.Product ParseProduct(Model.Product Product){
-            return new Entity.Product{
-                ProductName = Product.ProductName,
-                Price = Product.Price,
-                Category = (int) Product.Category,
-                Id = (int)Product.Id
-            };
+            try{
+                return new Entity.Product{
+                    ProductName = Product.ProductName,
+                    Price = Product.Price,
+                    Category = (int) Product.Category,
+                };
+            }catch(Exception e){
+                Console.WriteLine(e.ToString());
+            }
+            return null;
         }
     }
 }

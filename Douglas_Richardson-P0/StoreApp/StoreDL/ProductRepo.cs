@@ -5,6 +5,7 @@ using Mapper = StoreDL.Mappers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using Serilog;
 namespace StoreDL
 {
     /// <summary>
@@ -20,8 +21,12 @@ namespace StoreDL
         }
         public void AddNewProduct(Model.Product Product)
         {
-            context.Products.Add(mapper.ParseProduct(Product));
+            Entity.Product newProduct = mapper.ParseProduct(Product);
+            context.Entry(newProduct).State = EntityState.Added;
+            context.Products.Add(newProduct);
+            context.Entry(newProduct).State = EntityState.Detached;
             context.SaveChanges();
+            Log.Information("New Product Added. "+newProduct.ProductName);
         }
 
         public List<Model.Product> GetProducts()

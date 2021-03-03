@@ -21,10 +21,6 @@ namespace StoreBL
             orderRepo = newOrderRepo;
             userBL = newUserBL;
             cartOrder = new Order(); 
-
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
             // cartOrder = cartRepo.GetCartOrder(cartID);
             // if(cartOrder == null){
             //     cartOrder = new Order();
@@ -35,6 +31,7 @@ namespace StoreBL
 
         public void NewCartOrder(){
             cartOrder = new Order();
+            cartID = 0;
         }
 
         public int? GetCustomerCart(Customer customer){
@@ -144,9 +141,13 @@ namespace StoreBL
 
         //Empties the cart on the database and locally
         public int? EmptyCart(int? cartId){
-            //Console.WriteLine("The cart id: "+cartId);
+            
             cartOrder = new Order();
-            cartRepo.EmptyCart(cartId);
+            if(cartOrder.Customer == null){
+                cartRepo.EmptyCartNoCustomer(cartId);
+            }else{
+                cartRepo.EmptyCart(cartId);
+            }
             return cartId;
         }
         //Push the cart into an order repo, then clear the cart

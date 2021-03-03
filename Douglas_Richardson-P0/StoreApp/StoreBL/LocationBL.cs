@@ -18,12 +18,15 @@ namespace StoreBL
         public List<Location> GetLocations(){
             List<Location> thisLocationList = locationRepo.GetLocations();
             //cannot remove items from a list while iterating using foreach
-            for (int i = thisLocationList.Count - 1; i >= 0; i--)
-            {
-                if(thisLocationList[i].LocationName == null){
-                    thisLocationList.RemoveAt(i);
-                }        
+            if(thisLocationList != null){
+                for (int i = thisLocationList.Count - 1; i >= 0; i--)
+                {
+                    if(thisLocationList[i].LocationName == null){
+                        thisLocationList.RemoveAt(i);
+                    }        
+                }
             }
+            
             return thisLocationList;
         }
     }

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--
+        contains the meta data like the character set
+        the title of your tab/window/bookmark
+    -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Demo</title>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <style>
+        div{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body{
+            font-family: 'Courier New', Courier, monospace;
+            background-color: beige;
+        }
+    </style>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <h1 class="jumbotron">HTML, CSS, Bootstrap</h1>
+    <div class="container">
+        <h1>HTML</h1>
+        <div class="container">
+            <h2>Common Tags</h2>
+            <div class="container">
+                This is a div tag
+            </div>
+            <div class="container">
+                div is a generic block element
+            </div>
+            <div class="container">
+                it takes up vertical space
+            </div>
+            <div class="container">
+                <span> inline element</span>
+                <span> does not take up vertical space</span>
+            </div>
+            <div class="container">
+                <p>
+                    This is a paragraph tag
+                </p>
+                <article>
+                    This is an article, like a paragraph but takes less vertical space than paragraphs
+                </article>
+                <a href="https://agilemanifesto.org" target="blank">This is our page to beat!</a>
+            </div>
+            <div class="container">
+                <h3>Difference between header, head, heading</h3>
+                <p>head tag is the meta data</p>
+                <header>Is a sematic element that describes the a header</header>
+                <p>The heading is a way of formatting how things a presented, it has levels</p>
+                <h1>Level 1</h1>
+                <h2>Level 2</h2>
+                <p>Why use header</p>
+                <p>
+                    We dont use tags to make words appear <b>bolder</b> 
+                </p>
+            </div>
+            <div class="container">
+                <h3>Collection of stuff</h3>
+                <div class="container">
+                    <h4>Lists</h4>
+                    <ol>
+                        <li>this is an ordered list</li>
+                    </ol>
+                    <ul>
+                        <li>unordered list</li>
+                    </ul>
+                </div>
+                <div class="container">
+                    <h4>Tables</h4>
+                    <table class="table">
+                        <thead>
+                            <th>Name</th>
+                            <th>Favorite Color</th>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Guy</td>
+                                <td>Black</td>
+                            </tr>
+                            <tr>
+                                <td>Jacob</td>
+                                <td>Blue</td>
+                                <td>Yellow</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2>Attributes</h2>
+            <p class="attribute">
+                some tags like the image tag use Attributes to define the value of what they are presenting (img src="image path")
+                <br/>
+                The href attribute of the anchor tag tells you where the anchor leads
+                <br/>
+                you can use these attributes to identify your elements
+                <ul>
+                    <caption>2 commons ways to identify an element using attributes</caption>
+                    <li>ID - is a unique way to identify an element </li>
+                    <li>Class - is a way to identify multiple elements</li>
+                </ul>
+                You need to identity them to able to know where to apply certain rules in CSS or behavior in js
+                you can use the style in the inline, this breaks separation of concerns 
+                <p style="color:brown">Using style attribute, the color of the text has changed</p>
+            </p>
+        </div>
+    </div>
+    <div class="container csstalk">
+        <h1>Cascading Style Sheets</h1>
+        <p>CSS is used to apply styles to webpages</p>
+        <div class="container">
+            <h2>Ways to include css</h2>
+            <p>Inline, internal, external</p>
+        </div>
+        <div class="container">
+            <h2>Type of Selectors</h2>
+            <h3>Simple Selectors</h3>
+            <ul>
+                <li>
+                    Tag/Element
+                    <ul>
+                        <li>uses the tag name to identify the element</li>
+                        <li>this will affect all elements with that tag name</li>
+                    </ul>
+                </li>
+                <li>
+                    Class
+                    <ul>
+                        <li>uses the class name to style a group of elements</li>
+                        <li>denoted by .className</li>
+                    </ul>
+                </li>
+                <li id="id">
+                    Id
+                    <ul>
+                        <li>Uses an unique id</li>
+                        <li>denoted by #id</li>
+                    </ul>
+                </li>
+                <li class="pseudo">
+                    Pseudo-class
+                    <ul>
+                        <li>specific keyword at the end of the selector used to style the elements when it is at a certain state</li>
+                        <li>:active :hover etc</li>
+                    </ul>
+                </li>
+                <li class="pel">
+                    Pseudo-element
+                    <ul>
+                        <li>used to style specific parts of an element</li>
+                        <li>::before ::after ::firstline ::firstletter</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>Combinator Selectors</h3>
+            <ul>
+                <li>Child descendant</li>
+                <li>Sibling</li>
+                <li>attribute selectors</li>
+                <li>Multiple selectors</li>
+            </ul>
+            <h3>Wildcard selector</h3>
+            <ul>
+                <li>The * </li>
+                <li>Styles everything, all elements</li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <h2>Bootstrap js</h2>
+        <a href="http://"></a>
+    </div>
+</body>
+</html>

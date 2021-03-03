@@ -18,7 +18,7 @@ namespace StoreBL
         }
         public void AddProduct(Product Product){
             
-            //productRepo.AddNewProduct(Product);
+            productRepo.AddNewProduct(Product);
             //Turn product into an item, default zero quantity and no location, manager has to set these
             ItemBL newItemBL = new ItemBL(new ItemRepo(context, new Mapper.ItemMapper()));
             Item newItem = new Item();

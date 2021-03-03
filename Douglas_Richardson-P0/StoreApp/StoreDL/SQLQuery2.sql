@@ -2,9 +2,9 @@ drop table managers;
 drop table cart;
 drop table orderTable;
 drop table customers;
-drop table item;
-drop table product;
 drop table locationTable;
+drop table product;
+drop table item;
 
 create table managers(
 	id int identity primary key,

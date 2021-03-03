@@ -27,9 +27,6 @@ namespace StoreUI
             locationBL = newLocationBL;
             cartBL = newCartBL;
             this.context = context;
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
 
         public void End()
@@ -176,9 +173,15 @@ namespace StoreUI
                 Console.WriteLine(e.ToString());
             }
             
-            if(thisItemList.Count != 0){
-                foreach (Item item in thisItemList){
-                    Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" amount: "+item.Quantity);
+            if(thisItemList != null){
+                if(thisItemList.Count != 0){
+                    foreach (Item item in thisItemList){
+                        Console.WriteLine("["+item.ItemID+"] "+item.Product.ProductName+" amount: "+item.Quantity);
+                    }
+                }else{
+                    Console.WriteLine("There are no items.");
+                    Start(manager);
+                    active = false;
                 }
             }else{
                 Console.WriteLine("There are no items.");
@@ -254,10 +257,12 @@ namespace StoreUI
                 Console.WriteLine(e.ToString());
             }
             
-            if(thisLocationList.Count != 0){
-                foreach (Location location in thisLocationList)
-                {
-                    Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+            if(thisLocationList != null){
+                if(thisLocationList.Count != 0){
+                    foreach (Location location in thisLocationList)
+                    {
+                        Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+                    }
                 }
             }else{
                 Console.WriteLine("There are no locations.");

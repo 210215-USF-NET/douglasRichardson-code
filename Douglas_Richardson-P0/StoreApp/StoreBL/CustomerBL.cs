@@ -26,5 +26,10 @@ namespace StoreBL
         public Customer FindCustomerOnLastName(string lastName){
             return iCustomerRepo.GetCustomerByLastName(lastName);
         }
+        public void CheckIfEmailExists(string emailAddress){
+            if(FindCustomerOnEmail(emailAddress) != null){
+                throw new EmailExistsException();
+            }
+        }
     }
 }

@@ -1,0 +1,36 @@
+#aboutme{
+    background-color: brown;
+    text-align: center;
+    color: black;
+}
+div{
+    background-color: lightgray;
+}
+div > p{
+    color:blueviolet;
+}
+.memes{
+    max-width:250px;
+    max-height:250px;
+    width: auto;
+    height: auto;
+}
+#car{
+    max-width: 50%;
+    height: auto;
+}
+#carContainer{
+    text-align: center;
+}
+#myNameHeading{
+    text-align: center;
+}
+a{
+    font-size: x-large;
+    text-align: center;
+}
+.center {
+    margin: auto;
+    text-align: center;
+    padding: 10px;
+}

@@ -80,12 +80,15 @@ namespace StoreUI
         private void CustomerView(Customer customer){
             //Get the store locations first, let the customer choose
             List<Location> thisLocationList = locationBL.GetLocations();
-            Console.WriteLine("Type in a number from the list to choose an store.");
-            if(thisLocationList.Count != 0){
-                foreach (Location location in thisLocationList){
-                    if(location.LocationName != null){
-                        Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
-                    }        
+            
+            if(thisLocationList != null){
+                if(thisLocationList.Count != 0 ){
+                    Console.WriteLine("Type in a number from the list to choose an store.");
+                    foreach (Location location in thisLocationList){
+                        if(location.LocationName != null){
+                            Console.WriteLine("["+location.LocationID+"] "+location.LocationName);
+                        }        
+                    }
                 }
             }else{
                 Console.WriteLine("There are no store locations.");

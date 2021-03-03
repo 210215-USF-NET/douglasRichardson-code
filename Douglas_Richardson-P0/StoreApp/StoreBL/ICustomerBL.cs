@@ -8,5 +8,7 @@ namespace StoreBL
         List<Customer> GetCustomers();
         Customer FindCustomerOnEmail(string emailAddress);
         Customer FindCustomerOnLastName(string lastName);
+
+        void CheckIfEmailExists(string emailAddress);
     }
 }

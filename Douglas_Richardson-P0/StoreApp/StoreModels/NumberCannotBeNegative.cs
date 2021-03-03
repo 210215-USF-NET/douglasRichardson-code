@@ -1,7 +1,7 @@
 namespace StoreModels
 {
     /// <summary>
-    /// My custom exception when the user chooses the wrong item id
+    /// My custom exception when the user enters in a negative number where it shouldnt be
     /// </summary>
     public class NumberCannotBeNegative : System.Exception
     {

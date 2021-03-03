@@ -16,14 +16,14 @@ namespace StoreDL
         public LocationRepo(Entity.P0DatabaseContext context, Mapper.LocationMapper mapper){
             this.mapper = mapper;
             this.context = context;
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
         public void AddNewLocation(Model.Location location)
         {
-            context.LocationTables.Add(mapper.ParseLocation(location));
+            Entity.LocationTable newLocation = mapper.ParseLocation(location);
+            context.Entry(newLocation).State = EntityState.Added;
+            context.LocationTables.Add(newLocation);
             context.SaveChanges();
+            context.Entry(newLocation).State = EntityState.Detached;
             Log.Information("New location was created. "+location.LocationName);
         }
 

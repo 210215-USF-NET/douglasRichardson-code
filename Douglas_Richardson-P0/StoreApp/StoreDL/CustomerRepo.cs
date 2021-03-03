@@ -19,11 +19,6 @@ namespace StoreDL
         public CustomerRepo(Entity.P0DatabaseContext context, CustomerMapper mapper){
             this.mapper = mapper;
             this.context = context;
-
-            // /rollingInterval: RollingInterval.Day lets you log every day
-            Log.Logger = new LoggerConfiguration()
-            .WriteTo.File(@"ourLog.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
         }
         public void AddNewCustomer(Model.Customer customer)
         {
