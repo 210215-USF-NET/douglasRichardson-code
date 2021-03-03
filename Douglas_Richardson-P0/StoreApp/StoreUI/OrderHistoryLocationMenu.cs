@@ -5,6 +5,7 @@ using Entity = StoreDL.Entities;
 using Mapper = StoreDL.Mappers;
 using StoreModels;
 using System.Collections.Generic;
+using Serilog;
 namespace StoreUI
 {
     /// <summary>
@@ -45,7 +46,7 @@ namespace StoreUI
             try{
                 thisLocationList = locationBL.GetLocations();
             }catch(Exception e){
-                Console.WriteLine(e.ToString());
+                Log.Error(e.ToString());
             }
             
             if(thisLocationList != null){
@@ -82,7 +83,9 @@ namespace StoreUI
                 }catch(InvalidItemIdException){
                     Console.WriteLine("Not a valid location id. ");
                 }
-                catch(Exception e){Console.WriteLine(e.ToString());}
+                catch(Exception e){
+                    Log.Error(e.ToString());
+                }
             }
             
         }

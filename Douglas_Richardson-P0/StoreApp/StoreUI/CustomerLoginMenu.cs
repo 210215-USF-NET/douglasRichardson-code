@@ -3,6 +3,7 @@ using StoreModels;
 using StoreBL;
 using System.ComponentModel.DataAnnotations;
 using Entity = StoreDL.Entities;
+using Serilog;
 namespace StoreUI
 {
     /// <summary>
@@ -90,7 +91,7 @@ namespace StoreUI
                         Console.WriteLine("Please type in a valid email. ");
                     }
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }
             }while(active);
         }//start

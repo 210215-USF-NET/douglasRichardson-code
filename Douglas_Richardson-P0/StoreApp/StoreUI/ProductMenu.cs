@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using StoreModels;
 using StoreBL;
 using Entity = StoreDL.Entities;
+using Serilog;
 namespace StoreUI
 {
     /// <summary>
@@ -69,7 +70,9 @@ namespace StoreUI
                         }else{
                             Console.WriteLine("Please choose yes or no");
                         }
-                    }catch(Exception){}
+                    }catch(Exception e){
+                        Log.Error(e.ToString());
+                    }
                 }
                 
                 
@@ -124,7 +127,7 @@ namespace StoreUI
                 }catch(InvalidItemIdException){
                     Console.WriteLine("Not a valid location id.");
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }
             }
         }
@@ -226,7 +229,7 @@ namespace StoreUI
                     ListItemsMenuCustomer(customer, location);
                     break;
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                     break;
                 }
             }
@@ -244,7 +247,7 @@ namespace StoreUI
                 }catch(FormatException){
                     Console.WriteLine("Please type in a number. ");
                 }catch(Exception e){
-                    Console.WriteLine(e.ToString());
+                    Log.Error(e.ToString());
                 }
             }while(active);
         }
@@ -255,7 +258,7 @@ namespace StoreUI
             try{
                 thisLocationList = locationBL.GetLocations();
             }catch(Exception e){
-                Console.WriteLine(e.ToString());
+                Log.Error(e.ToString());
             }
             
             if(thisLocationList.Count != 0){
@@ -289,7 +292,9 @@ namespace StoreUI
                 }catch(InvalidItemIdException){
                     Console.WriteLine("Not a valid location id. ");
                 }
-                catch(Exception e){Console.WriteLine(e.ToString());}
+                catch(Exception e){
+                    Log.Error(e.ToString());
+                }
             }while(active);
         }
 

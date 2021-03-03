@@ -4,6 +4,7 @@ using StoreDL;
 using Entity = StoreDL.Entities;
 using Mapper = StoreDL.Mappers;
 using StoreModels;
+using Serilog;
 namespace StoreUI
 {
     /// <summary>
@@ -261,7 +262,9 @@ namespace StoreUI
                             active = false;
                         }   
                     }
-                }catch(Exception){}
+                }catch(Exception e){
+                    Log.Error(e.ToString());
+                }
             }
         }
     }//End of class
